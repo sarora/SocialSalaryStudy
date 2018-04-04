@@ -20,11 +20,11 @@ The following questions will be included in the survey. A brief motivation is gi
 >
 > This question aims to set a baseline salary for the person answering the questionnaire. The survey needs to determine whether a person expects to earn more than the average person with similar credentials. Determining the average expected salary, creates a control or baseline observation that can be used as comparison to a person's personal expectations.
 
-**Would you keep a job that does not give you a salary increase over the next two years? Assume high job satisfaction.**
+**Would you keep a job that does not give you a salary increase over the next two years? Assuming high job satisfaction.**
 
 > Binary
 >
-> The response to this question should give an indication whether a person strives for a higher income. Adding the assumption of high job satisfaction, places emphasis on the importance of the person's expected salary.
+> The response to this question should give an indication whether a person strives for a higher income or not. Adding the assumption of high job satisfaction, places emphasis on the importance of the person's expected salary.
 
 **What is the monthly salary that you aim to receive 1 year from now?**
 
