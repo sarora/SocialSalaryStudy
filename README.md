@@ -35,6 +35,6 @@
 Created by
 
 [Johannes Harmse](https://github.com/johannesharmse) &nbsp;&middot;&nbsp;
-[Siddarth Aora](https://github.com/simrnsethi) &nbsp;&middot;&nbsp;
+[Siddarth Arora](https://github.com/sarora) &nbsp;&middot;&nbsp;
 [Veronique Mulholland](https://github.com/vmulholl)
 </a></h4>
