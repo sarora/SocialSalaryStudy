@@ -36,6 +36,6 @@ The hypothesis test requires data collection. A survey is the best practical way
 Created by
 
 [Johannes Harmse](https://github.com/johannesharmse) &nbsp;&middot;&nbsp;
-[Siddarth Arora](https://github.com/sarora) &nbsp;&middot;&nbsp;
+[Siddharth Arora](https://github.com/sarora) &nbsp;&middot;&nbsp;
 [Veronique Mulholland](https://github.com/vmulholl)
 </a></h4>
