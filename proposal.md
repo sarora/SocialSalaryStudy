@@ -10,7 +10,7 @@ The goal of this study is to determine whether a person's social standards are c
 
 ## Methodology
 
-The test statistic will be measuring a correlation between social standards and a person's expected salary. 
+The test statistic will be attempting to identify if there is a strong correlation between social standards and a person's  salary expectations. A positive correlation would be expected between the continuous numerical measurement of social standards and the normalized continuous expected salary range. Social standards and expected salaries are expected to both form t-distributions given the survey responses. A linear regression model seems to be an appropriate choice for the study, since our response variable (expected salary) is a continuous range and the explanatory variables related to social standards are expected to have a linear relationship with expected salary.
 
 ## Survey
 
@@ -60,7 +60,7 @@ The goal will be to evaluate ones need to satisfy certain levels of social needs
 >
 > Vacations are an indication of leisure time and financial comfort.
 
-**On a scale of 0 to 10 how would you rate your financial circumstances compared to the population? 0 being "I do not know where my next meal will come from" and "10 being I am the 1%".**
+**On a scale of 0 to 10 how would you rate your financial circumstances compared to the population? 0 being "I do not know where my next meal will come from" and 10 being "I am the 1%".**
 
 > Standard multiple choice
 >
