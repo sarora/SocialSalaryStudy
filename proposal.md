@@ -12,44 +12,28 @@ The goal of this study is to determine whether a person's social standards are c
 
 The hypothesis test requires data collection. A survey is the best practical way of collecting the required data for this study. The questions for the study needs to be well formulated to ensure that the correct data is collected to reach a conclusion. The questions for this survey will contribute to determining either a person's social standards or expected salary. To avoid response bias the survey questions should not reveal what the hypothesis is that is being tested.
 
-The following questions will be included in the survey. A brief motivation is given for each question.
+The following questions will be included in the survey. A brief motivation is given for each question or subset of questions.
 
-
-
-## Overview
-
-The goal of this study is to determine whether people with different upbringings define success in different ways. For the purpose of the study, success is classified as either **financial wealth** or **non-financial wealth**. A typical definition of success that falls within the non-financial wealth category would be *finding a cure for cancer*.
-
-The idea behind this hypothesis is that people who grew up in poverty, or who formed part of the [Lower Middle Class](https://www.investopedia.com/financial-edge/0912/which-income-class-are-you.aspx), may attach more value to money. This may mean that people who attach more value to money may define success in terms of financial wealth. People who grew up with financial security may define success in a different way. [The Scarcity Trap](https://www.npr.org/2018/04/02/598119170/the-scarcity-trap-why-we-keep-digging-when-were-stuck-in-a-hole) makes it seem plausible that people who do have a financial wealth scarcity may have a bigger desire for financial wealth than people who do not have a financial wealth scarcity. This leads to the study hypothesis.
-
-## Survey
-
-The hypothesis requires data collection. A survey is the best practical way of collecting the required data for this study. The questions for the study needs to be well formulated to ensure that the correct data is collected to reach a conclusion on the study.
-
-The following questions will be included in the survey. A brief motivation is given for each question.
-
-**What is your year of birth?**
+**What should someone with your qualifications and experience expect to receive as an average monthly salary?**
 
 > Numerical
 >
-> The age of the individual will give an idea of the person's current life stage which may correlate with a person's definition of success. A retiree may have gone through more iterations of redefining success given more life events and realizations, compared to a teenager who is still financially dependent on his/her parents. Age needs to be captured to determine the presence of multi-collinearity.
+> This question aims to set a baseline salary for the person answering the questionnaire. The survey needs to determine whether a person expects to earn more than the average person with similar credentials. Determining the average expected salary, creates a control or baseline observation that can be used as comparison to a person's personal expectations.
 
-**In which country have you spent the majority of your time over the past 5 years?**
+**Would you keep a job that does not give you a salary increase over the next two years? Assume high job satisfaction.**
+
+> Binary
+>
+> The response to this question should give an indication whether a person strives for a higher income. Adding the assumption of high job satisfaction, places emphasis on the importance of the person's expected salary.
+
+**What is the monthly salary that you aim to receive 1 year from now?**
+
+> Numerical
+>
+> This question tries to quantify a person's subjective expected salary. Generally, a person would not receive a significantly higher salary in a year's time, except if the person expects to be in a better paying job role. If the baseline salary is adjusted with an annual inflation increase, it can be compared to the person's expected salary a year from now. Asking the question in this way, attempts to avoid the person realizing what the study is about, while still gaining valuable information.
+
+**What is your country of employment/future employment?**
 
 > Categorical
 >
-> A person's direct environment plays a big role in the way a person defines financial wealth. A person who lives in a country with a generally low living cost will most likely define financial wealth as a lower financial value compared to a person from a first world country. Depending on a person's country of residence, the country's GDP will be used to normalize a person's definition of financial wealth.
-
-**In which country have you spent the majority of your childhood years (age 0 - 18)?**
-
-> Categorical
->
-> This question relates to the study's hypothesis. It is believed that a person's upbringing environment is largely responsible for how a person perceives the world. As with the previous question, determining a person's nationality gives good insight into how a person defines financial wealth.
-
-**As a percentage, rate your parents'/guardians' income class (during your childhood) in relation to the country's population you grew up in.**
-
-> To maintain anonymity, the survey cannot directly ask about a person's personal finances. Asking a person to rate their income class as a percentage gives sufficient information in determining a person's financial circumstances during childhood.
-
-**As a percentage, rate your current income class in relation to the country's population where you spent the majority of the past 5 years.**
-
-> To maintain anonymity, the survey cannot directly ask about a person's personal finances. Asking a person to rate their income class as a percentage gives sufficient information in determining a person's current financial circumstances. A person's current financial circumstances
+> The country a person works in, plays a big role in a person's expected salary. Different countries have different costs of living which influences the general salary of a person with a specific job role. A country's GDP or living cost can be used to normalize the salary-related responses.
