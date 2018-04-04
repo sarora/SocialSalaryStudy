@@ -10,7 +10,7 @@
 
 ## Hypothesis
 
-<h5 align="center"> Is a person's social standards correlated with a person's expected salary? </a></h5>
+<h4 align="center"> Is a person's social standards correlated with a person's expected salary? </a></h4>
 
 <br>
 
