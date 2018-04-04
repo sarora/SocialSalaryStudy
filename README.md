@@ -6,7 +6,7 @@
 |------------------|-------------|
 | [Proposal](doc/proposal.md)   |  Initial Project Proposal |
 | [Proposal Commit]() | Final commit before release |
-| [Release v1.0]() | Proposal first release |
+| [Release v1.0](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/releases/tag/v1.0) | Proposal first release |
 
 ## Hypothesis
 
