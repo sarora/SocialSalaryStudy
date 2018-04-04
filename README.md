@@ -4,7 +4,7 @@
 
 | Deliverables      | Description |
 |------------------|-------------|
-| [Proposal](docs/proposal.md)   |  Initial Project Proposal |
+| [Proposal](doc/proposal.md)   |  Initial Project Proposal |
 | [Proposal Commit]() | Final commit before release |
 | [Release v1.0]() | Proposal first release |
 
