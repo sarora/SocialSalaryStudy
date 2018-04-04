@@ -8,6 +8,10 @@
 
 The goal of this study is to determine whether a person's social standards are correlated with a person's expected salary. The idea behind the hypothesis is that people who have higher social standards expect a higher salary. The opposite can also be argued - does a person's expected salary determine a person's social standards? This study does not aim to determine which variables are explanatory or a response, but rather to determine whether a strong correlation exists between social standards and expected salary.
 
+## Methodology
+
+The test statistic will be measuring a correlation between social standards and a person's expected salary. 
+
 ## Survey
 
 The hypothesis test requires data collection. A survey is the best practical way of collecting the required data for this study. The questions for the study needs to be well formulated to ensure that the correct data is collected to reach a conclusion. The questions for this survey will contribute to determining either a person's social standards or expected salary. To avoid response bias the survey questions should not reveal what the hypothesis is that is being tested.
@@ -73,3 +77,5 @@ The goal will be to evaluate ones need to satisfy certain levels of social needs
 > Standard multiple choice
 >
 > A potential indication of material consumption can be derived from questions regarding shopping for clothing or technology amongst other things. This is an example that could give us an idea of a person's interest in fronting the money to update their possesions more often than average. 
+
+## Ethical Considerations
