@@ -10,7 +10,7 @@ The goal of this study is to determine whether a person's social standards are c
 
 ## Methodology
 
-The test statistic will be attempting to identify if there is a strong correlation between social standards and a person's  salary expectations. A positive correlation would be expected between the continuous numerical measurement of social standards and the normalized continuous expected salary range. Social standards and expected salaries are expected to both form t-distributions given the survey responses. A linear regression model seems to be an appropriate choice for the study, since our response variable (expected salary) is a continuous range and the explanatory variables related to social standards are expected to have a linear relationship with expected salary.
+The test statistic will be attempting to identify if there is a strong correlation between social standards and a person's salary expectations. The t-test aid in determining statistical significance between the explanatory and response variables. A positive correlation would be expected between the continuous numerical measurement of social standards and the normalized continuous expected salary range. Social standards and expected salaries are expected to both form t-distributions given the survey responses. A linear regression model seems to be an appropriate choice for the study, since our response variable (expected salary) is a continuous range and the explanatory variables related to social standards are expected to have a linear relationship with expected salary.
 
 ## Survey
 
@@ -64,7 +64,7 @@ The goal will be to evaluate ones need to satisfy certain levels of social needs
 
 > Standard multiple choice
 >
-> This question adds a realtive measurement of where the respondent considers their financial status in comparison to their interpretation of population. It is well known that people typically undervalue themselves, but we are moreso interested in their answer in relation to their previous responses. 
+> This question adds a realtive measurement of where the respondent considers their financial status in comparison to their interpretation of population. It is well known that people typically undervalue themselves, but we are moreso interested in their answer in relation to their previous responses.
 
 **What level of education do you have?**
 
@@ -76,6 +76,6 @@ The goal will be to evaluate ones need to satisfy certain levels of social needs
 
 > Standard multiple choice
 >
-> A potential indication of material consumption can be derived from questions regarding shopping for clothing or technology amongst other things. This is an example that could give us an idea of a person's interest in fronting the money to update their possesions more often than average. 
+> A potential indication of material consumption can be derived from questions regarding shopping for clothing or technology amongst other things. This is an example that could give us an idea of a person's interest in fronting the money to update their possesions more often than average.
 
 ## Ethical Considerations
