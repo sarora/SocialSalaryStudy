@@ -10,7 +10,7 @@ The goal of this study is to determine whether a person's social standards are c
 
 ## Methodology
 
-The test statistic will be attempting to identify if there is a strong correlation between social standards and a person's salary expectations. The t-test aid in determining statistical significance between the explanatory and response variables. A positive correlation would be expected between the continuous numerical measurement of social standards and the normalized continuous expected salary range. Social standards and expected salaries are expected to both form t-distributions given the survey responses. A linear regression model seems to be an appropriate choice for the study, since our response variable (expected salary) is a continuous range and the explanatory variables related to social standards are expected to have a linear relationship with expected salary.
+The test statistic will be attempting to identify if there is a strong correlation between social standards and a person's salary expectations. The t-test will aid in determining statistical significance between the explanatory and response variables. A positive correlation would be expected between the continuous numerical measurement of social standards and the normalized continuous expected salary range. Social standards and expected salaries are expected to both form t-distributions given the survey responses. A linear regression model seems to be an appropriate choice for the study, since our response variable (expected salary) is a continuous range and the explanatory variables related to social standards are expected to have a linear relationship with expected salary.
 
 ## Survey
 
