@@ -2,7 +2,7 @@
 
 ## Hypothesis
 
-Is a person's social standards correlated with a person's expected salary?
+<h5 align="center"> Is a person's social standards correlated with a person's expected salary? </a></h5>
 
 ## Overview
 
@@ -12,7 +12,9 @@ The goal of this study is to determine whether a person's social standards are c
 
 The hypothesis test requires data collection. A survey is the best practical way of collecting the required data for this study. The questions for the study needs to be well formulated to ensure that the correct data is collected to reach a conclusion. The questions for this survey will contribute to determining either a person's social standards or expected salary. To avoid response bias the survey questions should not reveal what the hypothesis is that is being tested.
 
-The following questions will be included in the survey. A brief motivation is given for each question or subset of questions.
+The following questions will be included in the survey. They are defined below in two sections with a brief motivation for each question or subset of questions.
+
+### Financially-driven Questions
 
 **What should someone with your qualifications and experience expect to receive as an average monthly salary?**
 
@@ -37,3 +39,37 @@ The following questions will be included in the survey. A brief motivation is gi
 > Categorical
 >
 > The country a person works in, plays a big role in a person's expected salary. Different countries have different costs of living which influences the general salary of a person with a specific job role. A country's GDP or living cost can be used to normalize the salary-related responses.
+
+### Evaluating Social Standards
+
+The goal will be to evaluate ones need to satisfy certain levels of social needs. A person's standards are most often linked to the standards of the people that surround them, so the following questions aim to identify where the respondent fits in terms of financial comfort.
+
+**How many times a week do you eat out?**
+
+> Standard multiple choice
+>
+> Typically people who are not as concern about budget will tend to eat out more frequently.  
+
+**How many times a year do your go on a vacation and stay in a hotel?**
+
+> Standard multiple choice
+>
+> Vacations are an indication of leisure time and financial comfort.
+
+**On a scale of 0 to 10 how would you rate your financial circumstances compared to the population? 0 being "I do not know where my next meal will come from" and "10 being I am the 1%".**
+
+> Standard multiple choice
+>
+> This question adds a realtive measurement of where the respondent considers their financial status in comparison to their interpretation of population. It is well known that people typically undervalue themselves, but we are moreso interested in their answer in relation to their previous responses. 
+
+**What level of education do you have?**
+
+> Standard multiple choice
+>
+> The options will be such that beyond undergraduate level is categorised together as to prevent quasi-identifiers of PHD level respondents.
+
+**At which intervals do you purchase a new cellular smart phone?**
+
+> Standard multiple choice
+>
+> A potential indication of material consumption can be derived from questions regarding shopping for clothing or technology amongst other things. This is an example that could give us an idea of a person's interest in fronting the money to update their possesions more often than average. 
