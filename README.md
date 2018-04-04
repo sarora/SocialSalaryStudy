@@ -11,7 +11,9 @@
 ## Hypothesis
 
 <h5 align="center"> Is a person's social standards correlated with a person's expected salary? </a></h5>
+
 <br>
+
 ## Overview
 
 The goal of this study is to determine whether a person's social standards are correlated with a person's expected salary. The idea behind the hypothesis is that people who have higher social standards expect a higher salary. The opposite can also be argued - does a person's expected salary determine a person's social standards? This study does not aim to determine which variables are explanatory or a response, but rather to determine whether a strong correlation exists between social standards and expected salary.
