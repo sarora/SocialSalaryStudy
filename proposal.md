@@ -27,3 +27,17 @@ The following questions will be included in the survey. A brief motivation is gi
 > Categorical
 >
 > A person's direct environment plays a big role in the way a person defines financial wealth. A person who lives in a country with a generally low living cost will most likely define financial wealth as a lower financial value compared to a person from a first world country. Depending on a person's country of residence, the country's GDP will be used to normalize a person's definition of financial wealth.
+
+**In which country have you spent the majority of your childhood years (age 0 - 18)?**
+
+> Categorical
+>
+> This question relates to the study's hypothesis. It is believed that a person's upbringing environment is largely responsible for how a person perceives the world. As with the previous question, determining a person's nationality gives good insight into how a person defines financial wealth.
+
+**As a percentage, rate your parents'/guardians' income class (during your childhood) in relation to the country's population you grew up in.**
+
+> To maintain anonymity, the survey cannot directly ask about a person's personal finances. Asking a person to rate their income class as a percentage gives sufficient information in determining a person's financial circumstances during childhood.
+
+**As a percentage, rate your current income class in relation to the country's population where you spent the majority of the past 5 years.**
+
+> To maintain anonymity, the survey cannot directly ask about a person's personal finances. Asking a person to rate their income class as a percentage gives sufficient information in determining a person's current financial circumstances. A person's current financial circumstances 
