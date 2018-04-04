@@ -5,7 +5,7 @@
 | Deliverables      | Description |
 |------------------|-------------|
 | [Proposal](doc/proposal.md)   |  Initial Project Proposal |
-| [Proposal Commit]() | Final commit before release |
+| [Proposal Commit](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/commit/05685f9c8e0765d1ae11d6ad0d0ec3943635653b) | Final commit before release |
 | [Release v1.0](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/releases/tag/v1.0) | Proposal first release |
 
 ## Hypothesis
