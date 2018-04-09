@@ -4,37 +4,38 @@
 
 | Deliverables      | Description |
 |------------------|-------------|
-| [Proposal]()   |  Initial Project Proposal |
-| [Analysis Rmd]() | Placeholder for analysis pipeline  |
+| [Proposal](doc/proposal.md)   |  Initial Project Proposal |
+| [Proposal Commit](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/commit/05685f9c8e0765d1ae11d6ad0d0ec3943635653b) | Final commit before release |
+| [Release v1.0](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/releases/tag/v1.0) | Proposal first release |
 
-## Context
+## Hypothesis
 
-### Objective
-
-
-
-<h5 align="center"> How much clout does money have in your assessment of success given your upbringing? </a></h5>
-
-<h5 align="center">  QUESTION </a></h5>
-
-<h5 align="center"> QUESTION  </a></h5>
+<h4 align="center"> Is a person's social standards correlated with a person's expected salary? </a></h4>
 
 <br>
 
+## Overview
 
-### Original Analysis
+The goal of this study is to determine whether a person's social standards are correlated with a person's expected salary. The idea behind the hypothesis is that people who have higher social standards expect a higher salary. The opposite can also be argued - does a person's expected salary determine a person's social standards? This study does not aim to determine which variables are explanatory or a response, but rather to determine whether a strong correlation exists between social standards and expected salary.
 
-#### Data Acquisition
+## Methodology
 
-### Methodology
+The test statistic will be attempting to identify if there is a strong correlation between social standards and a person's salary expectations. A positive correlation would be expected between the continuous numerical measurement of social standards and the normalized continuous expected salary range. Social standards and expected salaries are expected to both form t-distributions given the survey responses. A linear regression model seems to be an appropriate choice for the study, since our response variable (expected salary) is a continuous range and the explanatory variables related to social standards are expected to have a linear relationship with expected salary.
 
-### Analysis Overview 
+### Survey
+
+The hypothesis test requires data collection. A survey is the best practical way of collecting the required data for this study. The questions for the study needs to be well formulated to ensure that the correct data is collected to reach a conclusion. The questions for this survey will contribute to determining either a person's social standards or expected salary. To avoid response bias the survey questions should not reveal what the hypothesis is that is being tested.
+
+
+## Analysis Overview 
+
+{placeholder}
 
 ---
 <h6 align="center">
 Created by
 
 [Johannes Harmse](https://github.com/johannesharmse) &nbsp;&middot;&nbsp;
-[Siddarth Arora](https://github.com/sarora) &nbsp;&middot;&nbsp;
+[Siddharth Arora](https://github.com/sarora) &nbsp;&middot;&nbsp;
 [Veronique Mulholland](https://github.com/vmulholl)
 </a></h4>

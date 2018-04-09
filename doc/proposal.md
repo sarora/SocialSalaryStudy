@@ -10,7 +10,7 @@ The goal of this study is to determine whether a person's social standards are c
 
 ## Methodology
 
-The test statistic will be attempting to identify if there is a strong correlation between social standards and a person's salary expectations. The t-test aid in determining statistical significance between the explanatory and response variables. A positive correlation would be expected between the continuous numerical measurement of social standards and the normalized continuous expected salary range. Social standards and expected salaries are expected to both form t-distributions given the survey responses. A linear regression model seems to be an appropriate choice for the study, since our response variable (expected salary) is a continuous range and the explanatory variables related to social standards are expected to have a linear relationship with expected salary.
+The test statistic will be attempting to identify if there is a strong correlation between social standards and a person's salary expectations. The t-test will aid in determining statistical significance between the explanatory and response variables. A positive correlation would be expected between the continuous numerical measurement of social standards and the normalized continuous expected salary range. Social standards and expected salaries are expected to both form t-distributions given the survey responses. A linear regression model seems to be an appropriate choice for the study, since our response variable (expected salary) is a continuous range and the explanatory variables related to social standards are expected to have a linear relationship with expected salary.
 
 ## Survey
 
@@ -79,3 +79,5 @@ The goal will be to evaluate ones need to satisfy certain levels of social needs
 > A potential indication of material consumption can be derived from questions regarding shopping for clothing or technology amongst other things. This is an example that could give us an idea of a person's interest in fronting the money to update their possesions more often than average.
 
 ## Ethical Considerations
+
+It is likely in the interest of us as investigators and the respondents as subjects to use UBC's Qualtrics tool to ensure our full compliance with FIPPA. Furthermore, we will need to consider the use of a click-through cover letter outlining the survey, the fact that it is voluntary, and that, by continuing, the respondent agrees to the risks and benefits and limits to confidentiality. We will be collecting personally identifiable information like country of origin which is a tricky one considering that there are 2 identifying countries in our class if every classmate is answering. For this, we are assuming that students will not be 100% forced to answer and will further mitigate the issue as we will promote our surveys on social media leveraging each of our exposures to people of different nationalities.
