@@ -2,7 +2,9 @@
 title: "EDA"
 author: "Johannes Harmse"
 date: "April 9, 2018"
-output: pdf_document
+output:
+  github_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -20,8 +22,14 @@ colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expec
                            'living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
                            'sports_hobbies', 'other')
 
+spending_cats <- c('living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
+                           'sports_hobbies', 'other')
+
 # remove no consent
 survey_results <- survey_results %>% filter(consent %in% c('Yes'))
+
+# add id
+survey_results$id <- 1:nrow(survey_results)
 
 # saveRDS(survey_results, file = '../data/raw/raw_clean.rds')
 
@@ -49,4 +57,36 @@ lm_survey <- lm(ratio ~ no_increase_acceptance +
 
 summary(lm_survey)
 ```
+
+```{r}
+survey_tidy <- NULL
+
+non_spendings <- colnames(survey_results)[!(colnames(survey_results) %in% spending_cats)]
+
+for (spending in spending_cats){
+  temp <- survey_results[ , non_spendings]
+  temp$spending_cat <- spending
+  temp$spending_val <- survey_results[[spending]]
+  survey_tidy <- rbind(survey_tidy, temp)
+}
+```
+
+```{r}
+for (i in unique(survey_tidy$id)){
+  temp <- survey_tidy %>% filter(id == i)
+  user_living <- as.numeric(temp %>% filter(temp$spending_cat == 'living_expenses') %>% select(spending_val))
+  survey_tidy[survey_tidy$id == i, 'spending_ratio'] <- temp$spending_val/user_living
+}
+```
+
+```{r}
+for (spending in spending_cats){
+  temp <- survey_tidy %>% filter(spending_cat == spending)
+  temp_lm <- lm(ratio ~ spending_ratio, data = temp)
+  print(spending)
+  print(summary(temp_lm))
+}
+```
+
+
 
