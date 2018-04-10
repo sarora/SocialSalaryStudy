@@ -41,11 +41,38 @@ survey_results %>% head()
 ```
 
 ```{r}
+# get ratio
 survey_results <- survey_results %>% 
   mutate(ratio = salary_expect/salary_base)
 ```
 
 ```{r}
+# generic first model
+lm_survey <- lm(ratio ~ no_increase_acceptance + 
+                  living_expenses + 
+                  savings + 
+                  vacation + 
+                  daily_leisure + 
+                  consumption_goods + 
+                  sports_hobbies + 
+                  other, data = survey_results)
+
+summary(lm_survey)
+```
+
+```{r}
+# remove outliers
+survey_results <- survey_results %>% 
+  filter(ratio < 10 & 
+           ratio > 0.1)
+
+# replace NA spendings with 0
+
+survey_results[ , spending_cats][is.na(survey_results[ , spending_cats])] <- 0
+```
+
+```{r}
+# generic first model (outliers removed and data cleaned)
 lm_survey <- lm(ratio ~ no_increase_acceptance + 
                   living_expenses + 
                   savings + 
@@ -88,5 +115,8 @@ for (spending in spending_cats){
 }
 ```
 
+```{r}
+
+```
 
 
