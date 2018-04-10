@@ -2,12 +2,21 @@
 title: "EDA"
 author: "Johannes Harmse"
 date: "April 9, 2018"
-output: pdf_document
+output:
+  github_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+```{r}
+# removing confidential data
+# temp <- read_csv(file = '../../survey_data/Demographic Survey.csv', skip = 1, header = T)
+# temp <- temp[, 10:ncol(temp)]
+```
+
 
 ```{r, warning=F, message=F}
 library(tidyverse)
@@ -16,13 +25,23 @@ library(tidyverse)
 ```{r}
 #import data
 survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv') # local path - remove identifiers beforehand
+
+# redefine column names
 colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expect', 'no_increase_acceptance', 
                            'living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
+                           'sports_hobbies', 'other')
+
+# spending categories
+spending_cats <- c('living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
                            'sports_hobbies', 'other')
 
 # remove no consent
 survey_results <- survey_results %>% filter(consent %in% c('Yes'))
 
+# add observation id
+survey_results$id <- 1:nrow(survey_results)
+
+# save raw clean data
 # saveRDS(survey_results, file = '../data/raw/raw_clean.rds')
 
 survey_results %>% head()
@@ -33,11 +52,13 @@ survey_results %>% head()
 ```
 
 ```{r}
+# get ratio
 survey_results <- survey_results %>% 
   mutate(ratio = salary_expect/salary_base)
 ```
 
 ```{r}
+# generic first model
 lm_survey <- lm(ratio ~ no_increase_acceptance + 
                   living_expenses + 
                   savings + 
@@ -49,4 +70,71 @@ lm_survey <- lm(ratio ~ no_increase_acceptance +
 
 summary(lm_survey)
 ```
+
+```{r}
+# remove outliers
+survey_results <- survey_results %>% 
+  filter(ratio < 10 & 
+           ratio > 0.1)
+
+# replace NA spendings with 0
+
+survey_results[ , spending_cats][is.na(survey_results[ , spending_cats])] <- 0
+```
+
+```{r}
+# generic first model (outliers removed and data cleaned)
+lm_survey <- lm(ratio ~ no_increase_acceptance + 
+                  living_expenses + 
+                  savings + 
+                  vacation + 
+                  daily_leisure + 
+                  consumption_goods + 
+                  sports_hobbies + 
+                  other, data = survey_results)
+
+summary(lm_survey)
+```
+
+```{r}
+survey_tidy <- NULL
+
+non_spendings <- colnames(survey_results)[!(colnames(survey_results) %in% spending_cats)]
+
+for (spending in spending_cats){
+  temp <- survey_results[ , non_spendings]
+  temp$spending_cat <- spending
+  temp$spending_val <- survey_results[[spending]]
+  survey_tidy <- rbind(survey_tidy, temp)
+}
+```
+
+```{r}
+for (i in unique(survey_tidy$id)){
+  temp <- survey_tidy %>% filter(id == i)
+  user_living <- as.numeric(temp %>% filter(temp$spending_cat == 'living_expenses') %>% select(spending_val))
+  survey_tidy[survey_tidy$id == i, 'spending_ratio'] <- temp$spending_val/user_living
+}
+```
+
+```{r}
+p_vals <- data.frame('category' = character(length(spending_cats)), 'slope' = numeric(length(spending_cats)), 'p_value' = numeric(length(spending_cats)), stringsAsFactors = FALSE)
+
+count <-  0
+
+for (i in spending_cats){
+  count <- count + 1
+  temp <- survey_tidy %>% filter(spending_cat == i)
+  temp_lm <- lm(ratio ~ spending_ratio, data = temp)
+  lm_summary <- summary(temp_lm)
+  p_vals[count, 'category'] <- as.character(i)
+  p_vals[count, 'slope'] <- temp_lm$coefficients[2]
+  p_vals[count, 'p_value'] <- ifelse(nrow(lm_summary$coefficients) > 1, lm_summary$coefficients[2 , 4], NA)
+}
+```
+
+```{r}
+p_vals
+```
+
 
