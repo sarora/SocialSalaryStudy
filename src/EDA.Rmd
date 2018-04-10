@@ -1,0 +1,52 @@
+---
+title: "EDA"
+author: "Johannes Harmse"
+date: "April 9, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warning=F, message=F}
+library(tidyverse)
+```
+
+```{r}
+#import data
+survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv') # local path - remove identifiers beforehand
+colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expect', 'no_increase_acceptance', 
+                           'living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
+                           'sports_hobbies', 'other')
+
+# remove no consent
+survey_results <- survey_results %>% filter(consent %in% c('Yes'))
+
+# saveRDS(survey_results, file = '../data/raw/raw_clean.rds')
+
+survey_results %>% head()
+```
+
+```{r}
+# readRDS(file = '../data/raw/raw_clean.rds')
+```
+
+```{r}
+survey_results <- survey_results %>% 
+  mutate(ratio = salary_expect/salary_base)
+```
+
+```{r}
+lm_survey <- lm(ratio ~ no_increase_acceptance + 
+                  living_expenses + 
+                  savings + 
+                  vacation + 
+                  daily_leisure + 
+                  consumption_goods + 
+                  sports_hobbies + 
+                  other, data = survey_results)
+
+summary(lm_survey)
+```
+
