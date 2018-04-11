@@ -4,30 +4,27 @@ Johannes Harmse
 April 9, 2018
 
 ``` r
-# removing confidential data
-# temp <- read_csv(file = '../../survey_data/Demographic Survey.csv', skip = 1, header = T)
-# temp <- temp[, 10:ncol(temp)]
-```
-
-``` r
 library(tidyverse)
 ```
 
 ``` r
-#import data
-survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv') # local path - remove identifiers beforehand
+# removing confidential data
+survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv', skip = 1)
 ```
 
+    ## Warning: Missing column names filled in: 'X1' [1], 'X2' [2], 'X3' [3],
+    ## 'X4' [4], 'X5' [5], 'X6' [6], 'X7' [7], 'X8' [8], 'X9' [9]
+
     ## Warning: Duplicated column names deduplicated: 'Response' =>
-    ## 'Response_1' [2], 'Response' => 'Response_2' [5]
+    ## 'Response_1' [11], 'Response' => 'Response_2' [14]
 
     ## Parsed with column specification:
     ## cols(
-    ##   Response = col_character(),
-    ##   Response_1 = col_character(),
+    ##   .default = col_character(),
+    ##   X1 = col_double(),
+    ##   X2 = col_integer(),
     ##   `Annual Salary (before deductions)` = col_integer(),
     ##   `Annual salary (before deductions)` = col_integer(),
-    ##   Response_2 = col_character(),
     ##   `Living Expenses (utilities, rent, mortgage, transportation, property taxes if owner, etc.)` = col_integer(),
     ##   `Savings (retirement, investments, emergency funds, etc.)` = col_integer(),
     ##   `Vacation (lodging, transportation, day trips, etc.)` = col_integer(),
@@ -37,7 +34,15 @@ survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv') # 
     ##   `Other (health care, taxes, dependent expenses, etc.)` = col_integer()
     ## )
 
+    ## See spec(...) for full column specifications.
+
 ``` r
+survey_results <- survey_results[, 10:ncol(survey_results)]
+
+
+#import data
+# survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv') # local path - remove identifiers beforehand
+
 # redefine column names
 colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expect', 'no_increase_acceptance', 
                            'living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
@@ -62,12 +67,12 @@ survey_results %>% head()
     ## # A tibble: 6 x 13
     ##   consent country             salary_base salary_expect no_increase_accep~
     ##   <chr>   <chr>                     <int>         <int> <chr>             
-    ## 1 Yes     United States of A~          NA            NA <NA>              
-    ## 2 Yes     Canada                    70000         70000 Yes               
-    ## 3 Yes     Canada                    90000        100000 No                
-    ## 4 Yes     Canada                    65000         90000 Yes               
-    ## 5 Yes     Canada                    80000         75000 Yes               
-    ## 6 Yes     Canada                    95000        105000 Yes               
+    ## 1 Yes     United States of A~      100000        110000 Yes               
+    ## 2 Yes     South Africa             160000        120000 Yes               
+    ## 3 Yes     South Africa                 NA            NA <NA>              
+    ## 4 Yes     Canada                    30000         30000 Yes               
+    ## 5 Yes     South Africa            3000000       3300000 Yes               
+    ## 6 Yes     United States of A~       75000         77000 Yes               
     ## # ... with 8 more variables: living_expenses <int>, savings <int>,
     ## #   vacation <int>, daily_leisure <int>, consumption_goods <int>,
     ## #   sports_hobbies <int>, other <int>, id <int>
@@ -104,24 +109,26 @@ summary(lm_survey)
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -1.2530 -0.4988 -0.2299  0.1048  7.6121 
+    ## -2.5572 -0.7988 -0.1067  0.3220  8.0703 
     ## 
     ## Coefficients: (1 not defined because of singularities)
-    ##                            Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)               -0.368683   2.649100  -0.139    0.890
-    ## no_increase_acceptanceYes  0.250355   0.537186   0.466    0.644
-    ## living_expenses            0.010001   0.029113   0.344    0.733
-    ## savings                    0.003538   0.035576   0.099    0.921
-    ## vacation                   0.073248   0.050322   1.456    0.155
-    ## daily_leisure              0.007683   0.042829   0.179    0.859
-    ## consumption_goods          0.001092   0.054564   0.020    0.984
-    ## sports_hobbies             0.047661   0.059265   0.804    0.427
-    ## other                            NA         NA      NA       NA
+    ##                            Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)               -0.875809   1.761593  -0.497    0.621    
+    ## no_increase_acceptanceYes  0.284242   0.490828   0.579    0.565    
+    ## living_expenses            0.007298   0.019068   0.383    0.703    
+    ## savings                    0.028358   0.024205   1.172    0.246    
+    ## vacation                   0.147477   0.031670   4.657 1.83e-05 ***
+    ## daily_leisure             -0.002480   0.030399  -0.082    0.935    
+    ## consumption_goods         -0.005303   0.047016  -0.113    0.911    
+    ## sports_hobbies             0.023158   0.049494   0.468    0.642    
+    ## other                            NA         NA      NA       NA    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.523 on 32 degrees of freedom
-    ##   (4 observations deleted due to missingness)
-    ## Multiple R-squared:  0.1142, Adjusted R-squared:  -0.07954 
-    ## F-statistic: 0.5895 on 7 and 32 DF,  p-value: 0.7594
+    ## Residual standard error: 1.772 on 60 degrees of freedom
+    ##   (25 observations deleted due to missingness)
+    ## Multiple R-squared:  0.3138, Adjusted R-squared:  0.2337 
+    ## F-statistic: 3.919 on 7 and 60 DF,  p-value: 0.001399
 
 ``` r
 # remove outliers
@@ -156,25 +163,25 @@ summary(lm_survey)
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -0.44724 -0.15351 -0.01762  0.08516  1.71976 
+    ## -0.68667 -0.14044 -0.02061  0.06512  1.86415 
     ## 
     ## Coefficients:
-    ##                             Estimate Std. Error t value Pr(>|t|)  
-    ## (Intercept)                1.0019531  0.3906479   2.565   0.0152 *
-    ## no_increase_acceptanceYes -0.1894531  0.1328235  -1.426   0.1635  
-    ## living_expenses           -0.0001961  0.0041568  -0.047   0.9627  
-    ## savings                    0.0102204  0.0057979   1.763   0.0875 .
-    ## vacation                  -0.0060749  0.0102128  -0.595   0.5561  
-    ## daily_leisure              0.0038172  0.0087573   0.436   0.6658  
-    ## consumption_goods         -0.0010248  0.0110443  -0.093   0.9267  
-    ## sports_hobbies             0.0157987  0.0119227   1.325   0.1945  
-    ## other                      0.0053635  0.0073922   0.726   0.4734  
+    ##                             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                1.1309956  0.1426541   7.928 2.27e-11 ***
+    ## no_increase_acceptanceYes -0.1560024  0.0910668  -1.713   0.0911 .  
+    ## living_expenses           -0.0010387  0.0018352  -0.566   0.5732    
+    ## savings                    0.0071305  0.0034563   2.063   0.0428 *  
+    ## vacation                  -0.0024537  0.0068022  -0.361   0.7194    
+    ## daily_leisure             -0.0005872  0.0052386  -0.112   0.9111    
+    ## consumption_goods         -0.0012078  0.0083464  -0.145   0.8853    
+    ## sports_hobbies             0.0072588  0.0086850   0.836   0.4061    
+    ## other                      0.0019409  0.0035539   0.546   0.5867    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 0.3674 on 32 degrees of freedom
-    ## Multiple R-squared:  0.2449, Adjusted R-squared:  0.05617 
-    ## F-statistic: 1.298 on 8 and 32 DF,  p-value: 0.2798
+    ## Residual standard error: 0.3542 on 71 degrees of freedom
+    ## Multiple R-squared:  0.1117, Adjusted R-squared:  0.0116 
+    ## F-statistic: 1.116 on 8 and 71 DF,  p-value: 0.3632
 
 ``` r
 survey_tidy <- NULL
@@ -205,6 +212,7 @@ count <-  0
 for (i in spending_cats){
   count <- count + 1
   temp <- survey_tidy %>% filter(spending_cat == i)
+  temp <- temp %>% filter(!is.na(spending_ratio) & abs(spending_ratio) != Inf)
   temp_lm <- lm(ratio ~ spending_ratio, data = temp)
   lm_summary <- summary(temp_lm)
   p_vals[count, 'category'] <- as.character(i)
@@ -217,11 +225,11 @@ for (i in spending_cats){
 p_vals
 ```
 
-    ##            category     slope      p_value
-    ## 1   living_expenses        NA           NA
-    ## 2           savings 0.3289472 1.311452e-06
-    ## 3          vacation 0.2041850 1.816509e-01
-    ## 4     daily_leisure 0.1359407 2.794008e-01
-    ## 5 consumption_goods 0.1669850 1.044669e-01
-    ## 6    sports_hobbies 0.8587598 8.193711e-05
-    ## 7             other 0.3754592 1.979317e-03
+    ##            category      slope      p_value
+    ## 1   living_expenses         NA           NA
+    ## 2           savings 0.23516271 8.284805e-05
+    ## 3          vacation 0.14432323 2.600583e-01
+    ## 4     daily_leisure 0.05701884 4.969810e-01
+    ## 5 consumption_goods 0.11015343 2.013140e-01
+    ## 6    sports_hobbies 0.25028137 5.877919e-02
+    ## 7             other 0.01648614 6.326853e-01

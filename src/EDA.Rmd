@@ -11,20 +11,18 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
-# removing confidential data
-# temp <- read_csv(file = '../../survey_data/Demographic Survey.csv', skip = 1, header = T)
-# temp <- temp[, 10:ncol(temp)]
-```
-
-
 ```{r, warning=F, message=F}
 library(tidyverse)
 ```
 
 ```{r}
+# removing confidential data
+survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv', skip = 1)
+survey_results <- survey_results[, 10:ncol(survey_results)]
+
+
 #import data
-survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv') # local path - remove identifiers beforehand
+# survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv') # local path - remove identifiers beforehand
 
 # redefine column names
 colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expect', 'no_increase_acceptance', 
@@ -125,6 +123,7 @@ count <-  0
 for (i in spending_cats){
   count <- count + 1
   temp <- survey_tidy %>% filter(spending_cat == i)
+  temp <- temp %>% filter(!is.na(spending_ratio) & abs(spending_ratio) != Inf)
   temp_lm <- lm(ratio ~ spending_ratio, data = temp)
   lm_summary <- summary(temp_lm)
   p_vals[count, 'category'] <- as.character(i)
