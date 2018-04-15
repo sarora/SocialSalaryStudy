@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
-```{r}
+```
 # removing confidential data
 survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv', skip = 1)
 survey_results <- survey_results[, 10:ncol(survey_results)]
@@ -24,14 +24,7 @@ survey_results <- survey_results[, 10:ncol(survey_results)]
 #import data
 # survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv') # local path - remove identifiers beforehand
 
-# redefine column names
-colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expect', 'no_increase_acceptance', 
-                           'living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
-                           'sports_hobbies', 'other')
 
-# spending categories
-spending_cats <- c('living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
-                           'sports_hobbies', 'other')
 
 # remove no consent
 survey_results <- survey_results %>% filter(consent %in% c('Yes'))
@@ -53,6 +46,15 @@ survey_results %>% head()
 ```
 
 ```{r}
+# redefine column names
+colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expect', 'no_increase_acceptance', 
+                           'living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
+                           'sports_hobbies', 'other')
+
+# spending categories
+spending_cats <- c('living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
+                           'sports_hobbies', 'other')
+
 # get ratio
 survey_results <- survey_results %>% 
   mutate(ratio = salary_expect/salary_base)

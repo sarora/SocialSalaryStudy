@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r, warning=F, message=F}
-library(tidyverse)
+library(tidyverse); theme_set(theme_bw())
 ```
 
 # Data Pre-processing
@@ -30,7 +30,8 @@ In order to maintain user privacy a few manipulations were handled before the ra
 
 These were the first steps applied to `surveydata_clean.rds` when the data was downloaded raw from _Survey Monkey_. 
 
-```
+
+```{r eval=FALSE}
 # removing confidential data
 survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv', skip = 1)
 survey_results <- survey_results[, 10:ncol(survey_results)]
@@ -66,18 +67,14 @@ Once the data is pre-processed, it is reimported and the columns and categories 
 # import clean data
 survey_results <-  readRDS(file = '../data/processed/surveydata_clean.rds')  # local path - remove identifiers beforehand
 
-survey_results %>% head()
-
 # redefine column names
-colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expect', 'no_increase_acceptance', 
-                           'living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
-                           'sports_hobbies', 'other')
+colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expect', 'no_increase_acceptance',
+                              'living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods',
+                              'sports_hobbies', 'other', 'id')
 
 # spending categories
-spending_cats <- c('living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
-                           'sports_hobbies', 'other')
-
-
+spending_cats <- c('living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods',
+                   'sports_hobbies', 'other')
 ```
 
 
@@ -90,11 +87,184 @@ survey_results[ , spending_cats][is.na(survey_results[,spending_cats])] <- 0
 # converting char to numeric
 survey_results$salary_base <- as.numeric(as.character(survey_results$salary_base))
 survey_results$salary_expect <- as.numeric(as.character(survey_results$salary_expect))
-ratios = survey_results$salary_expect/survey_results$salary_base
 
-# add ratio 
-survey_results <- survey_results %>% mutate(ratio = ratios)
+
 # add ratio 
 survey_results <- survey_results %>% mutate(ratio = survey_results$salary_expect/survey_results$salary_base)
-
 ```
+
+#### Outlier Handling
+
+Having chosen to remove outliers on the basis that with a small number of observations applying the statistical method of removing outliers greater than two standard deviations could be erroneous since it cannot be deduced with certainty which distribution is being represented. That being said, a combination of visual assessments and quantile analysis allowed a reasonable upper and lower limit to be chosen.
+
+EXPLAIN REASONING HERE
+
+-----------basic plot showing outliers
+```{r}
+# --------------------------------------remove 2 standard deviations
+# remove outliers
+survey_results <- survey_results %>% 
+  filter(ratio < 10 & 
+           ratio > 0.1)
+```
+
+
+
+
+Each variable is summarized. Since it is difficult to highlight important information from a summary table containing so many variables, a _______plot was generated. 
+
+```{r}
+# data summary table
+sum.tb <- summary(survey_results)
+sum.tb
+# labels(survey_results) <- 
+# library(knitr)
+# library(papeR)
+# xtable(summarize(survey_results, type = "numeric"))
+# xtable(summarize(Orthodont, type = "factor", variables = "Sex"))
+# xtable(summarize(Orthodont, type = "numeric", group = "Sex"))
+# 
+# library("knitr")
+# summarize(survey_results, type = "factor")
+# kable(summarize(Orthodont, type = "numeric"))
+# kable(summarize(Orthodont, type = "factor", variables = "Sex", cumulative = TRUE))
+# kable(summarize(Orthodont, type = "numeric", group = "Sex", test = FALSE))
+```
+
+### Response Variable
+
+The premise of the study was to develop a metric that would indicate the inclination of individuals to see financial gain as the main driver for success and determine if there is a relationship with the way their income is spent. Three variables were collected that pertain to our model's dependent variable which include:
+
+
+
+```{r}
+# get ratio
+survey_results <- survey_results %>% 
+  mutate(ratio = salary_expect/salary_base)
+```
+
+| Dependent Features       | Description                                                                |
+|--------------------------|----------------------------------------------------------------------------|
+| `salary_base`            | An indicator meant to be a subjective baseline of what salary a <br> person of their expertise would earn.      |
+| `salary_expect`          | The expected salary combined with the base salary provides a relative <br> indicator to the respondents pursuit of monetary gains. |
+| `no_increase_acceptance` | A binary metric serves as a safety check against false positives, that is respondents <br> that may have over-exagerated  their expected salary skewing <br> the impression of interest in monetary gain while in reality being content with their current situation.  |
+| `ratio`                  | This is a calculated metric that simplifies handling respondent's country selection.                                  |
+
+------------plot ratio
+
+
+
+vvvvvvvvvvvvvvvvv ------not required
+```{r}
+# generic first model
+lm_survey <- lm(ratio ~ no_increase_acceptance + 
+                  living_expenses + 
+                  savings + 
+                  vacation + 
+                  daily_leisure + 
+                  consumption_goods + 
+                  sports_hobbies + 
+                  other, data = survey_results)
+
+summary(lm_survey)
+```
+
+
+# Outliers
+
+Considerations were made to account for outliers. Justification for removing outliers beyond two standard deviations from the mean 
+- typos
+-
+
+
+
+
+---------------- boxplot function to remove outliers
+---------------- boxplot plot
+
+```{r}
+# ---------------------------------fix for 2SD
+# remove outliers
+survey_results <- survey_results %>% 
+  filter(ratio < 10 & 
+           ratio > 0.1)
+
+# replace NA spendings with 0
+
+survey_results[ , spending_cats][is.na(survey_results[ , spending_cats])] <- 0
+```
+# Model
+
+A first take at modelling the data .........
+
+
+```{r}
+# generic first model (outliers removed and data cleaned)
+lm_survey <- lm(ratio ~ no_increase_acceptance + 
+                  living_expenses + 
+                  savings + 
+                  vacation + 
+                  daily_leisure + 
+                  consumption_goods + 
+                  sports_hobbies + 
+                  other, data = survey_results)
+
+summary(lm_survey)
+```
+
+```{r}
+# gathered data
+survey_tidy <- NULL
+
+non_spendings <- colnames(survey_results)[!(colnames(survey_results) %in% spending_cats)]
+
+for (spending in spending_cats){
+  temp <- survey_results[ , non_spendings]
+  temp$spending_cat <- spending
+  temp$spending_val <- survey_results[[spending]]
+  survey_tidy <- rbind(survey_tidy, temp)
+}
+```
+
+Standardizing the spendings according to their living expenses. 
+
+```{r}
+# spending as a ratio of living expenses
+for (i in unique(survey_tidy$id)){
+  temp <- survey_tidy %>% filter(id == i)
+  user_living <- as.numeric(temp %>% filter(temp$spending_cat == 'living_expenses') %>% select(spending_val))
+  survey_tidy[survey_tidy$id == i, 'spending_ratio'] <- temp$spending_val/user_living
+}
+```
+
+
+
+```{r}
+# store variable p-values
+p_vals <- data.frame('category' = character(length(spending_cats)), 'slope' = numeric(length(spending_cats)), 'p_value' = numeric(length(spending_cats)), stringsAsFactors = FALSE)
+
+# run linear models for each spending category individually
+count <-  0
+
+for (i in spending_cats){
+  count <- count + 1
+  temp <- survey_tidy %>% filter(spending_cat == i)
+  temp <- temp %>% filter(!is.na(spending_ratio) & abs(spending_ratio) != Inf)
+  temp_lm <- lm(ratio ~ spending_ratio, data = temp)
+  lm_summary <- summary(temp_lm)
+  p_vals[count, 'category'] <- as.character(i)
+  p_vals[count, 'slope'] <- temp_lm$coefficients[2]
+  p_vals[count, 'p_value'] <- ifelse(nrow(lm_summary$coefficients) > 1, lm_summary$coefficients[2 , 4], NA)
+}
+```
+
+```{r}
+p_vals
+```
+
+
+
+
+
+
+
