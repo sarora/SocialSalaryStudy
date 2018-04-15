@@ -2,7 +2,9 @@
 title: "Viz"
 author: "Sidd"
 date: "April 9, 2018"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -19,6 +21,7 @@ When you click the **Knit** button a document will be generated that includes bo
 library(tidyverse)
 library(ggjoy)
 library(reshape2)
+library(cowplot)
 ```
 
 
@@ -51,9 +54,9 @@ survey_results <- survey_results %>%  mutate(ratio = salary_expect/salary_base )
 
 
 # remove outliers
-survey_results <- survey_results %>% 
-  filter(ratio < 10 & 
-           ratio > 0.1)
+#survey_results <- survey_results %>% 
+ # filter(ratio < 10 & 
+  #         ratio > 0.1)
 
 survey_results[ , spending_cats][is.na(survey_results[,spending_cats])] <- 0
 
@@ -134,6 +137,31 @@ ggplot(survey_mean_yearly_expenses) +
 ```
 
 
+#### Box-Plot 
+
+
+```{r, fig.width=10, fig.height=6}
+
+survey_results_filt <- survey_results %>% filter(ratio >0.2500000 & ratio < 2)
+
+
+p1<- ggplot(survey_results)+
+  geom_boxplot(aes(x=1, y= ratio), outlier.colour = "red", fill = "salmon") +
+    labs(x="",y="Ratio", title = "With Outliers" )
+
+
+p2<- ggplot(survey_results_filt)+
+  geom_boxplot(aes(x=1, y = ratio), outlier.colour = "red", fill = "salmon")+
+    labs(x="",y="Ratio", title = "With some outliers removed")
+
+plot_grid(p1,p2) 
+
+
+outliers <- boxplot.stats(survey_results$ratio)$out
+dh<- data.frame(outliers)
+dh
+
+```
 
 
 
@@ -180,9 +208,5 @@ ggplot(survey_results_spendings, aes(x = value, y = variable, height = ..density
 
 ```
 
-
-
-
-
-
+> Distributions for the various spending percentages. 
 
