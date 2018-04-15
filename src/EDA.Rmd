@@ -42,11 +42,14 @@ survey_results$id <- 1:nrow(survey_results)
 # save raw clean data
 saveRDS(survey_results, file = '../data/processed/surveydata_clean.rds')
 
-survey_results %>% head()
+# remove all traces
+rm(survey_results)
 ```
 
 ```{r}
-# test = readRDS(file = '../data/processed/surveydata_clean.rds')
+# import clean data
+survey_results <-  readRDS(file = '../data/processed/surveydata_clean.rds')
+survey_results %>% head()
 ```
 
 ```{r}
