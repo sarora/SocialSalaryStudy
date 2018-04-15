@@ -52,11 +52,78 @@ survey_results <-  readRDS(file = '../data/processed/surveydata_clean.rds')
 survey_results %>% head()
 ```
 
+We want to measure whether a person is driven by money or not. We found it reasonable to assume that a person who is driven by money would expect to earn more than the average person who has the same skillset and experience.
+
+Our survey has captured the salary of what a participant thinks an average person with their skills and experience should earn, as well as the salary that the participant expects to receive in 1 year's time. Taking inflation and other micro-factors into account, a participant's expected salary in a year's time shouldn't be much higher than the average person with the same skills and experience.
+
+The survey captured the participant's salary in their unique currency. The survey was answered by people from various countries with different currancies. This means that we cannot compare the captured salary values between participants. An easy way of standardising these values is to handle the salary values as a ratio of expected salary over average salary. The ratio should be consistent across different currancies.
+
 ```{r}
 # get ratio
 survey_results <- survey_results %>% 
   mutate(ratio = salary_expect/salary_base)
 ```
+
+```{r}
+ggplot(data = survey_results, aes(x = country, y = ratio, colour = country, fill = country)) + 
+  geom_jitter() + 
+  geom_violin(alpha = 0.2)
+```
+
+Our assumption seems to be accurate. There is no country that has a significantly higher or lower ratio distribution.
+
+```{r}
+ggplot(data = survey_results, aes(x = ratio)) + 
+  geom_density(colour = 'red', fill = 'red', alpha = 0.2)
+```
+
+```{r}
+##### OUTLIER PLOT!!!!!!!
+```
+
+```{r}
+##### REMOVE OUTLIERS USING BOXPLOT!!!!!!!!
+
+#### REMOVE CODE CHUNK BELOW
+```
+
+
+```{r}
+# remove outliers
+survey_results <- survey_results %>% 
+  filter(ratio < 10 & 
+           ratio > 0.1)
+
+# replace NA spendings with 0
+
+survey_results[ , spending_cats][is.na(survey_results[ , spending_cats])] <- 0
+```
+
+The study is interested in the ratio distribution above. Is there any correlation between the above ratio and social standards?
+
+The survey captured the percentages of the main expenses of each participant. Each participant had to assign percentages that adds up to 100%. The different expense categories were strategically chosen which are believed to relate to a person's social standards. For example, it is believed that a person who spends a large percentage on vacations and daily leisure most likely has higher social standards than a person who contributes most of their salary to savings. The hypothesis is that a person with higher social standards will have a higher salary ratio as described above.
+
+In theory this makes sense to simply compare these expense percentages to the salary ratios and look for any significant correlation. But in the real world there are many confounders that have to be accounted for. For example, a person who is close to retirement will most likely not expect an increase in the coming year, but may spend a large portion of their salary on vacations and daily leisure.
+
+It isn't always as clear-cut as to say that the closer you are to retirement, the more you will spend on vacation. Or on the other side of the spectrum, it cannot be assumed that a young person won't spend a large percentage of their income on traveling.
+
+The first confounder that we believe is of importance, is whether a person prefers job satisfaction over an increase in salary. The survey raised the question whether a person would keep their job if they don't receive a salary increase in two years, given high job satisfaction.
+
+A person who spends a lot on vacation and leisure (which can be either the younger or older generation) may strive for a higher salary, but the possibility exists that they don't - possibly depending whether they value job satisfaction over a salary increase.
+
+```{r}
+ggplot(survey_tidy, aes(x = ratio, group = no_increase_acceptance, colour = no_increase_acceptance)) + 
+  geom_density(aes(fill = no_increase_acceptance), alpha = 0.2)
+```
+
+
+For most cases, this should be a an accurate indication of a person's drive for money, but it is dangerous to assume that this is true across the board.
+
+
+
+We have observations from all across the world. 
+
+
 
 ```{r}
 # generic first model
@@ -72,27 +139,18 @@ lm_survey <- lm(ratio ~ no_increase_acceptance +
 summary(lm_survey)
 ```
 
-```{r}
-# remove outliers
-survey_results <- survey_results %>% 
-  filter(ratio < 10 & 
-           ratio > 0.1)
 
-# replace NA spendings with 0
-
-survey_results[ , spending_cats][is.na(survey_results[ , spending_cats])] <- 0
-```
 
 ```{r}
 # generic first model (outliers removed and data cleaned)
-lm_survey <- lm(ratio ~ no_increase_acceptance + 
+lm_survey <- lm(ratio ~ no_increase_acceptance*( 
                   living_expenses + 
                   savings + 
                   vacation + 
                   daily_leisure + 
                   consumption_goods + 
                   sports_hobbies + 
-                  other, data = survey_results)
+                  other), data = survey_results)
 
 summary(lm_survey)
 ```
@@ -139,4 +197,51 @@ for (i in spending_cats){
 p_vals
 ```
 
+## Checking for hidden things 8|
+
+
+```{r}
+ggplot(survey_tidy %>% filter(ratio < 10), aes(x = ratio, group = no_increase_acceptance, colour = no_increase_acceptance)) + 
+  geom_density()
+
+ggplot(survey_tidy %>% filter(ratio < 10), aes(x = ratio)) + 
+  geom_density()
+```
+
+```{r}
+survey_results %>% 
+  group_by(no_increase_acceptance) %>% 
+  summarise(total = n())
+```
+
+
+```{r}
+ggplot(survey_tidy %>% filter(ratio < 2), aes(y = spending_val, x = spending_cat, group = spending_cat, colour = spending_cat)) + 
+  geom_boxplot()
+```
+
+```{r}
+for (cat in spending_cats){
+  temp <- survey_tidy %>% filter(spending_cat == cat & 
+                                  ratio > 0.4 & 
+                                  ratio < 1.6)
+  
+  temp <- temp %>% 
+    mutate(spend_bin = ifelse(spending_val < quantile(spending_val, 0.25), "low", ifelse(spending_val < quantile(spending_val, 0.5), "med", ifelse(spending_val < quantile(spending_val, 0.75), "med_hi", "high"))))
+  
+  print(ggplot(temp, aes(x = spending_val, colour = no_increase_acceptance)) + 
+    geom_density() + 
+      labs(title = cat))
+}
+```
+```{r}
+# ggplot(survey_tidy, aes(x = )
+```
+
+
+```{r}
+
+survey_explan <- survey_tidy %>% 
+  mutate()
+```
 
