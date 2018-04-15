@@ -103,7 +103,7 @@ EXPLAIN REASONING HERE
 # --------------------------------------remove 2 standard deviations
 # remove outliers
 survey_results <- survey_results %>% 
-  filter(ratio < 10 & 
+  dplyr::filter(ratio < 10 & 
            ratio > 0.1)
 ```
 
