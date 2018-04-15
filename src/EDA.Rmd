@@ -56,7 +56,7 @@ We want to measure whether a person is driven by money or not. We found it reaso
 
 Our survey has captured the salary of what a participant thinks an average person with their skills and experience should earn, as well as the salary that the participant expects to receive in 1 year's time. Taking inflation and other micro-factors into account, a participant's expected salary in a year's time shouldn't be much higher than the average person with the same skills and experience.
 
-The survey captured the participant's salary in their unique currency. The survey was answered by people from various countries with different currancies. This means that we cannot compare the captured salary values between participants. An easy way of standardising these values is to handle the salary values as a ratio of expected salary over average salary. The ratio should be consistent across different currancies.
+The survey captured the participant's salary in their unique currency. The survey was answered by people from various countries with different currencies. This means that we cannot compare the captured salary values between participants. An easy way of standardising these values is to handle the salary values as a ratio of expected salary over average salary. The ratio should be consistent across different currencies.
 
 ```{r}
 # get ratio
@@ -112,14 +112,75 @@ The first confounder that we believe is of importance, is whether a person prefe
 A person who spends a lot on vacation and leisure (which can be either the younger or older generation) may strive for a higher salary, but the possibility exists that they don't - possibly depending whether they value job satisfaction over a salary increase.
 
 ```{r}
-ggplot(survey_tidy, aes(x = ratio, group = no_increase_acceptance, colour = no_increase_acceptance)) + 
-  geom_density(aes(fill = no_increase_acceptance), alpha = 0.2)
+survey_results %>% group_by(no_increase_acceptance) %>% summarise(participants = n())
 ```
 
 
-For most cases, this should be a an accurate indication of a person's drive for money, but it is dangerous to assume that this is true across the board.
+```{r}
+ggplot(survey_results, aes(x = ratio, group = no_increase_acceptance, colour = no_increase_acceptance)) + 
+  geom_density(aes(fill = no_increase_acceptance), alpha = 0.2)
+```
+
+The plot above shows similar salary ratio distributions for participants who prefer high job satisfaction as those who prefer a salary increase. It does seem as if a person who has a higher salary ratio has a higher probability of prefering an increase over job satisfaction, even though this probability isn't significant. However, it will be of more importance if the distributions looked different for people with different types of expenses.
+
+It is difficult to visualize the interaction between expenses, salary ratio and job satisfaction versus salary increase preference. It seems more logical and of statistical importance to fit comparitive models and observe whether the confounder variable adds any value to the model.
+
+The salary ratio is a continuous variable and from our ratio probability distribution earlier, we saw that the standard deviation is fairly normally distributed around the mean after removing outliers. For this reason a linear regression model seems like a sensible model to fit to our data.
+
+We want to determine whether the preference for job satisfaction interacts with with our explanatory variables. The explanatory variables in our case are the expense categories. We need to compare an additive linear model with a model that considers job satisfaction as a variable that interacts with our expense categories.
+
+```{r}
+# model without interaction
+lm_survey <- lm(ratio ~ living_expenses + 
+                  savings + 
+                  vacation + 
+                  daily_leisure + 
+                  consumption_goods + 
+                  sports_hobbies + 
+                  other, data = survey_results)
+
+summary(lm_survey)
+```
+
+Without any interaction, none of the expenses carry any statistical significance. Below we allow the job satisfaction versus salary increase preference to interact with the expense explanatory variables.
+
+```{r}
+# model with interaction
+lm_survey <- lm(ratio ~ no_increase_acceptance:(living_expenses + 
+                  savings + 
+                  vacation + 
+                  daily_leisure + 
+                  consumption_goods + 
+                  sports_hobbies + 
+                  other), data = survey_results)
+
+summary(lm_survey)
+```
+
+Above we see that that the job satisfaction confounder variable does contribute towards the correlation between savings and salary ratio.
+
+```{r}
+ggplot(survey_results, aes(y = ratio, x = savings, group = no_increase_acceptance, colour = no_increase_acceptance)) + 
+  geom_point(aes(fill = no_increase_acceptance), alpha = 0.2) + 
+  geom_smooth(method = "lm")
+```
 
 
+There seems to be a positive correlation between the percentage a person contributes towards savings and the person's salary ratio **only** when a person person prefers a salary increase above high job satisfaction.
+
+We saw earlier that participants with different preferences in terms of job satisfaction and salary increases have more or less the same salary ratio distribution. However, our above findings is an indication that the preference for a salary increase does have play a role on the relationship between savings contribution and salary ratio, opposed to those who prefer a high job satisfaction.
+
+We aren't directly interested in a person's preference between job satisfaction and salary increase, but we do need to take into account how this variable is influencing our study. There are various ways of dealing with confounding variables, but given our our dataset size, our options are limited. For now, including this interaction in our model should be sufficient to maintain awareness of its effect.
+
+Another interaction that has a fairly low p-value is the interaction between living expenses and job satisfaction preference.
+
+```{r}
+ggplot(survey_results, aes(y = ratio, x = living_expenses, group = no_increase_acceptance, colour = no_increase_acceptance)) + 
+  geom_point(aes(fill = no_increase_acceptance), alpha = 0.2) + 
+  geom_smooth(method = "lm")
+```
+
+It would appear that people who spend a small percentage on living expenses have a larger salary ratio **only** when they prefer a salary increase. Living expenses is defined as basic needs expenses. This observation is indeed through provoking. The confidence intervals are fairly wide, but there might be some truth in the finding. It could contribute towards our hypothesis - people who spend a large percentage on non-essentials (i.e. non-living expenses) may be the people who are driven by money. In this case, it seems as if our confounding variable interaction could support our hypothesis (we have to keep in mind that savings is a non-essential and not necessarily an indication of high social standards). However, the lack of statistical significance and small number of observations mean that we cannot draw any conclusions. However, it is important to differentiate between the people who prefer job satisfaction and those who prefer an increase.
 
 We have observations from all across the world. 
 
