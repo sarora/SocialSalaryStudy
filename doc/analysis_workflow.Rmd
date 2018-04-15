@@ -100,3 +100,8 @@ https://www.google.ca/search?ei=onDOWvyiKMT10wLRq7CAAg&q=Multiple+Linear+Regress
 # Discussion
 
 # Conclusion
+
+
+____
+
+Confounding variables can be unavoidable. In the interest of restricting the amount of questions posed to reach the largest audience possible, it was expected that a certain amount of confounding variables would creep in to the study.   a short survey and gathering For this study, 
