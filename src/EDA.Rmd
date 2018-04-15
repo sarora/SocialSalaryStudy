@@ -40,13 +40,16 @@ survey_results <- survey_results %>% filter(consent %in% c('Yes'))
 survey_results$id <- 1:nrow(survey_results)
 
 # save raw clean data
-# saveRDS(survey_results, file = '../data/raw/raw_clean.rds')
+saveRDS(survey_results, file = '../data/processed/surveydata_clean.rds')
 
-survey_results %>% head()
+# remove all traces
+rm(survey_results)
 ```
 
 ```{r}
-# readRDS(file = '../data/raw/raw_clean.rds')
+# import clean data
+survey_results <-  readRDS(file = '../data/processed/surveydata_clean.rds')
+survey_results %>% head()
 ```
 
 ```{r}
