@@ -9,6 +9,7 @@
 | [Milestone 1 Commit](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/commit/a6699731ac3e9b740a113a2781e720f03c44dac5) | Final commit before release |
 | [Release v2.0](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/releases/tag/v2.0) |Milestone 1 release |
 | [Survey Monkey Link](https://www.surveymonkey.com/r/2MS6758) | Survey link |
+| [Proposal and Questions](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/vmulholl/doc/proposal.md) | Questions from survey (in case the survey has been completed and cannot be accessed) |
 
 
 
