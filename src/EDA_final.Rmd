@@ -1,7 +1,7 @@
 ---
 title: "Exploratory Data Analysis"
 author: "S. Arora, J. Harmse, V. Mulholland"
-date: "April 9, 2018"
+date: "`r format(Sys.time(), '%B %e, %Y')`"
 header-includes:
 - \usepackage{fancyhdr}
 - \pagestyle{fancy}
@@ -124,7 +124,12 @@ survey_results[ , spending_cats][is.na(survey_results[ , spending_cats])] <- 0
 It was decided to remove the values beyond ~95% confidence level. The box-plot method performs a more sophisticated outlier selection than the alternative, the quantile approach, that is more rigid in the 95% threshold. Since we have less observations than ideal, it seemed more appropriate. The visualization below shows the contrast when the most extreme outliers are remove. 
 
 
-```{r, fig.width=10, fig.height=6}
+Take a look at Figure \ref{fig:fig1}.
+
+
+```{r fig1, echo=FALSE, fig.cap="\\label{fig:fig1}This is a caption"}
+
+#{r fig1,  fig.cap="This is a caption", fig.width=10, fig.height=6, echo=FALSE}
 
 survey_results_filt <- survey_results %>% filter(ratio >0.2500000 & ratio < 2)
 
