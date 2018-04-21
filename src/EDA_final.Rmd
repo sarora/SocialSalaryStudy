@@ -121,7 +121,7 @@ survey_results <- survey_results %>%
 survey_results[ , spending_cats][is.na(survey_results[ , spending_cats])] <- 0
 ```
 
-It was decided to remove the values beyond ~95% confidence level. The box-plot method performs a more sophisticated outlier selection than the alternative, the quantile approach, that is more rigid in the 95% threshold. Since we have less observations than ideal, it seemed more appropriate. The visualization below shows the contrast when the most extreme outliers are remove. 
+It was decided to remove the values beyond ~95% confidence level. The box-plot method performs a more sophisticated outlier selection than the alternative, the quantile approach, that is more rigid in the 95% threshold. Since we have less observations than ideal, it seemed more appropriate. The visualization below shows the contrast when the most extreme outliers are removed. 
 
 
 Take a look at Figure \ref{fig:fig1}.
@@ -154,7 +154,7 @@ dh
 ```
 
 
-The questions was designed to minimize the potential for entry mistakes when participants entered their responses. A rule was included to ensure that the expenditure percentages summed up to 100 points, but this was not possible with the user salary through the _Survey Monkey_ interface. This process of removing outliers will filter out major mistakes in currency where the user entered that they expected a very disproportionate salary increase. 
+The questions were designed to minimize the potential for entry mistakes when participants entered their responses. A rule was included to ensure that the expenditure percentages summed up to 100 points, but this was not possible with the user salary through the _Survey Monkey_ interface. This process of removing outliers will filter out major mistakes in currency where the user entered that they expected a very disproportionate salary increase. 
 
 
 Below each variable is summarized. Since it is difficult to highlight important information from a summary table containing so many variables, a jitter-violin plot was also generated. 
