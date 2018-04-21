@@ -4,8 +4,8 @@
 
 | Deliverables      | Description |
 |------------------|-------------|
-| [EDA Report](doc/eda_final.pdf)   |  Exploratory Data Analysis Report PDF |
-| [EDA RMD](src/eda_final.rmd)   |  Exploratory Data Analysis can be ran in Rmd |
+| [EDA Report](doc/EDA_final.pdf)   |  Exploratory Data Analysis Report PDF |
+| [EDA RMD](src/EDA_final.rmd)   |  Exploratory Data Analysis can be ran in Rmd |
 | [Milestone 1 Commit](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/commit/a6699731ac3e9b740a113a2781e720f03c44dac5) | Final commit before release |
 | [Release v2.0](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/releases/tag/v2.0) |Milestone 1 release |
 | [Survey Monkey Link](https://www.surveymonkey.com/r/2MS6758) | Survey link |
@@ -37,7 +37,7 @@ Our survey has captured the salary of what a participant thinks an average perso
 
 The participant's salary was stored in their unique currency. The survey was answered by people from various countries with different currencies. This means that we cannot compare the captured salary values between participants. An easy way of standardising these values is to handle the salary values as a ratio of expected salary over average salary. The ratio should be consistent across different currencies.
 
-## Analysis Overview 
+## Analysis Overview
 
 The study is interested in the ratio distribution above. Is there any correlation between the above ratio and social standards? The premise of the study was to develop a metric that would indicate the inclination of individuals to see financial gain as the main driver for success and determine if there is a relationship with the way their income is spent. Three variables were collected that pertain to our model's dependent variable which include:
 
@@ -52,7 +52,7 @@ The survey also captured the percentages of the main expenses of each participan
 
 It is difficult to visualize the interaction between expenses, salary ratio and job satisfaction versus salary increase preference. It seems more logical and of statistical importance to fit comparitive models and observe whether the confounder variable adds any value to the model. The salary ratio is a continuous variable and from our ratio probability distribution earlier, we saw that the standard deviation is fairly normally distributed around the mean after removing outliers. For this reason a linear regression model seems like a sensible model to fit to our data.
 
-We want to determine whether the preference for job satisfaction interacts with with our explanatory variables. The explanatory variables in our case are the expense categories. We need to compare an additive linear model with a model that considers job satisfaction as a variable that interacts with our expense categories. The following joy plot displays the distribution of participant spendings. 
+We want to determine whether the preference for job satisfaction interacts with with our explanatory variables. The explanatory variables in our case are the expense categories. We need to compare an additive linear model with a model that considers job satisfaction as a variable that interacts with our expense categories. The following joy plot displays the distribution of participant spendings.
 
 
 ---
