@@ -112,13 +112,13 @@ Having chosen to remove outliers on the basis that with a small number of observ
 
 
 ```{r}
+## saving a copy with all outliers.
+survey_results_all_outliers <- survey_results
+
 # remove outliers
 survey_results <- survey_results %>% 
   filter(!ratio %in% boxplot.stats(survey_results$ratio)$out)
 
-# replace NA spendings with 0
-
-survey_results[ , spending_cats][is.na(survey_results[ , spending_cats])] <- 0
 ```
 
 It was decided to remove the values beyond ~95% confidence level. The box-plot method performs a more sophisticated outlier selection than the alternative, the quantile approach, that is more rigid in the 95% threshold. Since we have less observations than ideal, it seemed more appropriate. The visualization below shows the contrast when the most extreme outliers are removed. 
@@ -127,25 +127,30 @@ It was decided to remove the values beyond ~95% confidence level. The box-plot m
 Take a look at Figure \ref{fig:fig1}.
 
 
-```{r fig1, echo=FALSE, fig.cap="\\label{fig:fig1}This is a caption"}
+```{r fig1, echo=FALSE,fig.width=10, fig.cap="\\label{fig:fig1}This is a caption"}
 
 #{r fig1,  fig.cap="This is a caption", fig.width=10, fig.height=6, echo=FALSE}
 
-survey_results_filt <- survey_results %>% filter(ratio >0.2500000 & ratio < 2)
+## want to remove some outliers.
+survey_results_filt <- survey_results_all_outliers %>% filter(ratio >0.2500000 & ratio < 2)
 
-p1<- ggplot(survey_results)+
+p1<- ggplot(survey_results_all_outliers)+
   geom_boxplot(aes(x=1, y= ratio), outlier.colour = "red", fill = "salmon") +
-    labs(x="",y="Ratio", title = "With Outliers" )
+      labs(x="Countries",y="Ratio", title = "With Outliers" ) 
+
+p1 <- p1 + theme(axis.text.x = element_blank())
+
 
 # for visual
 p2<- ggplot(survey_results_filt)+
   geom_boxplot(aes(x=1, y = ratio), outlier.colour = "red", fill = "salmon")+
-    labs(x="",y="Ratio", title = "With some outliers removed") 
+    labs(x="Countries",y="Ratio", title = "With some outliers removed") 
   
+p2<- p2 + theme(axis.text.x = element_blank())
 
 # title <- ggdraw() + draw_label("Relative Display of Outliers", fontface='bold')
 
-plot_grid(p1,p2) 
+plot_grid(p1,p2)
 
 
 outliers <- boxplot.stats(survey_results$ratio)$out
@@ -169,10 +174,6 @@ ggplot(data = survey_results, aes(x = country, y = ratio, colour = country, fill
   geom_jitter() + 
   geom_violin(alpha = 0.2) +
   theme(axis.text.x = element_text(angle = 25, hjust = 0.7, vjust = 0.8))
-
-
-
-  
 ```
 
 Our assumption seems to be accurate with regards to countries not varying too greatly in their responses. There is no country that has a significantly higher or lower ratio distribution. As a sanity check, it is a good idea to combine survey answers from all participants to verify that the variance around our mean is somewhat normally distributed (the plot above makes it seem intuitive that this would be the case, but cannot make the assumption). This would verify that we are dealing with a t-distribution.
@@ -227,10 +228,10 @@ survey_results_spendings<- melt(survey_results_spendings)
 
 # joy plot per participant
 ggplot(survey_results_spendings, aes(x = value, y = variable, height = ..density.., fill = variable ))+
-  geom_joy(stat = "density")+
+  geom_joy(stat = "density", bw =2.5)+
     scale_y_discrete(breaks = c("living_expenses","savings","vacation","daily_leisure","consumption_goods","sports_hobbies","other"),labels=c("Living   Expenses","Savings","Vacation","Daily Leisure","Consumption Goods","Sports Hobbies","Other")) +
-  theme(legend.position = "None")   +
-  labs(x = 'Salary Change Ratio', y ='Spending Categories', title = 'All Participants Salary Ratio Distribution', subtitle= "Grouped by Spending Categories")
+  theme(legend.position = "None") +
+      labs(x = 'Expenses (%)', y ='Spending Categories', title = 'All Participants Expenses Distributions', subtitle= "Grouped by Spending Categories")
 ```
 
 #### Additional Modelling and Exploratory Analysis
