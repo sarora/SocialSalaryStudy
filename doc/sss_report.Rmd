@@ -22,60 +22,36 @@ library(cowplot)
 library(ggjoy)
 library(reshape2)
 library(pwr)
-library(MatchIt)
 ```
 
 
 # Study Overview
 
-> 
-* Clearly state the null hypothesis
-* Include study overview with specific methods used
-* Support terminology used with other papers
-   - Define social standards
-   - Define the relationship behind 
+The purpose of this study to measure whether a person is driven by money or not. We found it reasonable to assume that a person who is driven by money would expect to earn more than the average person who has the same skillset and experience. The question to be answered is the following:
 
-<h4 align="center"> Is a person's social standards correlated with a person's drive for financial wealth? </a></h4>
+><h4 align="center"> 
+**Is a person's social standards correlated with a person's drive for financial wealth?**
+</a></h4>
 
-The null hypothesis is that the people who are driven by financial wealth in their careers and those that are driven by job satisfaction share the same social standards in terms of spending patterns.
+The null hypothesis is that the people who are driven by financial wealth and those that are driven by job satisfaction share the same social standards in terms of spending patterns while the alternative is that there is enough evidence to support that the two groups do not share the same spending patterns. A logistic regression is used to model the probability of belonging to the said groups given the explanatory spending and country of origin variables. 
 
->We have subjects from all walks of life and are particularly interested in their attitude towards finances and careers.
+Our survey captures the salary of what a participant thinks an average person with their skills and experience should earn, as well as the salary that the participant expects to receive in 1 year's time. The average inflation rate world-wide was of approximately 3.15 per the [Statista Statistics Portal](https://www.statista.com/statistics/256598/global-inflation-rate-compared-to-previous-year/). Taking inflation and other micro-factors into account, a participant's expected salary in a year's time shouldn't be much higher than the average person with the same skills and experience.
 
->There could be many factors influencing a participants interest in pursuing a salary increase that could be correlated with the time since the last increase in salary for instance. The question was designed to ask whether a user
+The survey was answered by people from various countries with different currencies and it records the participant's salary in their respective currency. This means that we cannot compare the captured salary values between participants. An easy way of standardising these values is to handle the salary values as a ratio of the difference between expected salary and average salary over the average salary. The ratio should be consistent across different currencies.
 
->Self-reporting is innacurate. The study was designed acknowledging that there could be a certain amount of bias in each person's answers knowing that they may not not have had access to their financial information on hand when responding. Since we are mainly interested in one's relative relatioship between the different monetary values (hence the ratio and the percentages),
-we are making the assumption that one's biased impression of their finances can still  be representive of their beliefs when indicating whether money is the main driver in their career.
-
->That being said, this study has its limitations and could have been improved namely in the categorization of expense categories. It can be difficult to differentiate between the different types of conspicuous spending, and one could consider that living expenses includes the over-priced rent for instance. We would have had to use a benchmark of the average costs which would have made us much more reliant and the actual monetary values that were input, or if we maintain the path we chose of only being reliant on the perceived attitude toward one's finances, we would have had to be more explicit in how we differentiate frivolous spending over basic needs.
-
-
->The goal of this study is to determine whether a person's social standards are correlated with a person's expected salary. The idea behind the hypothesis is that people who have higher social standards expect a higher salary. The opposite can also be argued - does a person's expected salary determine a person's social standards? This study does not aim to determine which variables are explanatory or a response, but rather to determine whether a strong correlation exists between social standards and expected salary. We found it reasonable to assume that a person who is driven by money would expect to earn more than the average person who has the same skillset and experience.
-
-
-Considering that participants identified several different country job locations, it was determined that a possible confounder could be the cultural attitude towards spending. Since our respondents were mostly from North America, we categorized the country as either North American or not to get somewhat of an even split. 
-
-<INSERT BLURB ABOUT WHAT WE DECIDE TO CONCLUDE IN TERMS OF WHAT'S CONSPICUOUS SPENDING>
-
-
-
-
+For this study, social standards is defined as a person's inclination for a high relative consumption on leisure activities and non-essential expenditure. Our hypothesis relies on the theory that prevailing social conditions will influences one's relationship with money which would translate in whether increase in income is the priority.
+The study is inspired by [Hirsh's hypothesis](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/master/doc/references/Status-seeking-and-material-affluence--evaluating-the-H_2003_Ecological-Econ.pdf) which states that prevailing social conditions will influences one's spending on status (status-seeking) goods and activities  which would translate in those with a higher disposable income being more inclined to spend on non-essential expenditures.
 
 # Methodology
 
-The test statistic will be attempting to identify if there is a strong correlation between social standards and a person's salary expectations. A positive correlation would be expected between the continuous numerical measurement of social standards and the normalized continuous expected salary range. Social standards and expected salaries are expected to both form t-distributions given the survey responses. A linear regression model seems to be an appropriate choice for the study, since our response variable (expected salary) is a continuous range and the explanatory variables related to social standards are expected to have a linear relationship with expected salary.
+## Survey Study Design
+
+A survey was conducted on _Survey Monkey_ to address the question at hand. The intended audience was originally our MDS class, but the invitation was extended to our social media accounts (LinkedIn, Facebook, etc.). The 5 questions in the Appendix under [Survey Questions](#surveyq) are conceptualized from both pertinent topics, one pertaining to the salary motivations and the latter is a measure of a participants social standards. This is admittedly a difficult concept to measure, thus our focus is mainly to delineated the difference between essential expenditure versus lifestyle enhacement spendings. The vacation spending category is considered a non-essential category since it can be extrapolated that any non-conspicuous travels would (such as traveling to a nearby town to visit relatives) will only make up a marginal proportion of the overall spending. The paper [Conspicuous Consumption Applied to Tourism Destination](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/master/doc/references/Conspicuous%20Consumption%20Applied%20to%20Tourism%20Destination.pdf) states that the location or purpose of vacation will help determine whether the spending is categorized as conspicuous or not. The daily leisure, hobbies and consumer goods catgories are all deemed to fall under the non-necessary spending categories and the living expenses, savings and other are classified as basic needs. The [Study Design discussion](#designdisc) will elaborate on whether these assumptions were truly justified at the phase of study design. 
 
 
-
-
-## survey study design
-
-The questions in the Appendix under [Survey Questions](#surveyq) and are conceptualized from two topics, one pertaining to the salary motivations and the latter is a measure of a participants social standards. This is admittedly a difficult concept to measure, thus our focus is mainly to delineated the difference between essential expenditure versus lifestyle enhacement spendings. 
+## Data Collection Methods
 
 Certain safety checks are put in place to prevent users from entering invalid data. For instance, the spending categories have to add up to 100% of their expenditure
-
-
-
-## data collection methods
 
 The following table summarises the key fields populated by the [survey](#surveyq) data and the calculated value, `ratio`, namely the response variable as a ratio of the two salary values.
 
@@ -85,22 +61,31 @@ The following table summarises the key fields populated by the [survey](#surveyq
 | `salary_expect`          | The expected salary combined with the base salary provides a relative <br> indicator to the respondents pursuit of monetary gains. |
 | `no_increase_acceptance` | A binary metric used to flag those that are more driven by money than others.  |
 | `ratio`                  | $\frac{Salary_{expect} - Salary_{base}}{Salary_{base}}$ allows us to differentiate those who <br>have a desire for a high increase in salary vs those that are satisfied with a modest amount.   |
-| `living_expenses`        | Living Expenses (utilities, rent, mortgage, transportation, property taxes if owner, etc.)                                  |
-| `savings`                | Savings (retirement, investments, emergency funds, etc.)                                  |
-| `vacation`               | Vacation (lodging, transportation, day trips, etc.)                                  |
-| `daily_leisure`          | Daily Leisure (eating out, books, movies, self-care, etc.)                                  |
-| `consumption_goods`      | Consumption Goods (clothing, electronics, other luxury items, etc.)                                  |
-| `sports_hobbies`         | Personal Sports and Hobbies (sporting goods and services, gym, arts and crafts, etc.)                                  |
-| `other`                  | Other (health care, taxes, dependent expenses, etc.)                                  |
+| `living_expenses`        | Living Expenses (utilities, rent, mortgage, transportation, property taxes if owner, etc.) percentage of spending |
+| `savings`                | Savings (retirement, investments, emergency funds, etc.) percentage of spending |
+| `vacation`               | Vacation (lodging, transportation, day trips, etc.) percentage of spending |
+| `daily_leisure`          | Daily Leisure (eating out, books, movies, self-care, etc.) percentage of spending |
+| `consumption_goods`      | Consumption Goods (clothing, electronics, other luxury items, etc.) percentage of spending |
+| `sports_hobbies`         | Personal Sports and Hobbies (sporting goods and services, gym, arts and crafts, etc.) percentage of spending |
+| `other`                  | Other (health care, taxes, dependent expenses, etc.) percentage of spending |
 
-The data is anonymized before being made visible and then uploaded as a processed [dataset](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/vmulholl/data/processed/surveydata_clean.rds). Several wrangling steps are performed to process and wrangle the data into a usable format. 
+The data is anonymized before being made visible and then uploaded as a processed [dataset](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/vmulholl/data/processed/surveydata_clean.rds). Several pre-processing steps are performed to clean and wrangle the data into a usable format. Our response variable underwent a transformation to better differentiate the participants of interest 
+since we cannot assume that a person with a high salary ratio is primarily driven by wealth as they may have specified that job satisfaction is a bigger driver than salary increase and vice-versa. Those that do not fall into either these two groups are considered to have answered ambiguously (expects a high salary increase, but is content with job satisfaction or the opposite) and cannot be considered for our study. 
 
-## analysis methods
+\[
+\begin{cases}
+\ Wealth&\text{for ${no\_increase\_acceptance} = No\ and\ ratio > median(ratio)$}\\
+\ Not\ Wealth&\text{for ${no\_increase\_acceptance} = Yes\ and\ ratio <= median(ratio)$}\\
+Other&\text{otherwise}\\
+\end{cases}
+\]
 
-> From the exploratory analysis, it is determined that the response variable should be modeled using a logistic regression that identifies the participants that belong to one of two groups. The first group comprised of respondents that are deemed driven by financial wealth by indicating that they would not prioritize job satisfaction over a raise within two years and whose ratio is above the median 
 
+## Analysis Methods
 
-> Before settling on the model features, the confounding variables had to be assessed. From the EDA performed in the Appendix [Continent section](#edacontinent), it seems viable that a person's origin may influence their spending habits and relationship to money out of cultural differences, which we would want to account for. 
+From the exploratory analysis, it is determined that the response variable should be modeled using a logistic regression that identifies the participants that belong to one of two groups. The first group is comprised of respondents that are deemed driven by financial wealth by indicating that they would not prioritize job satisfaction over a raise within two years and their salary ratio is above the median. The second group is at the opposite end of the spectrum specifying that they would maintain a job given satisfaction and that they expect less than the median salary ratio. 
+
+Before settling on the model features, the confounding variables had to be assessed. From the EDA performed in the Appendix [Continent section](#edacontinent), it seems viable that a person's origin may influence their spending habits and relationship to money out of cultural differences, which we would want to account for. 
 
 Figure \ref{fig:fig1}.
 
@@ -233,37 +218,22 @@ lm_confound <- glm(group_bin ~ living_expenses +
 
 The Anova test results in the Appendix [Continent section](#edacontinent) has the `Pr(>Chi)` output indicates $0.05046$. Since this value is on the verge of being below the significance level and the fact that we do not have a very large number of observations, the `continent` variable will be used in our model as a confounding variable. 
 
-
-
-
-
 # Discussion
 
-## Study Design
-> what did you do well to make this study as causal as possible?
+## Study Design {#designdisc}
 
-The questions were constructed to account for all types of spending so that the respondent could better consider their periodic spending distribution. There are many subjective and psychological features that would contribute to someone's self-assessment of expected and base salary estimates which was accounted for when stating that we are looking at a person's drive for money. It could be 
+The [Survey Questions](#surveyq) were constructed to account for all types of spending, so that the respondent could better consider their proportional spending distribution. There are many subjective and psychological features that would contribute to someone's self-assessment of expected and base salary estimates which was accounted for when stating that we are looking at a person's drive for money, therefore their perceived attitude toward financial vocational incentives. 
 
-> what was not done well and how did that effect your studies conclusions?
+Clarifying the spending categories is a shortcoming of our study. There is a tradeoff between making our survey straightforward and being too transparent about the agenda behind the analysis with overly specific questions. There is some ambiguity behind the concept of social standards which we tried to account for in the vacation, hobbies, consumption and daily leisure categories, but we acknowledge that one could be partaking in conspicuous consumption while categorizing it as a living expense, such as paying a very high rent to live in the nicest neighbourhood. The "Other" category could also be misleading because there could be some frivolous expenses that are not accounted for. 
 
-Clarifying the spending categories is a shortcoming of our study. There is a tradeoff between making our survey straightforward and being too transparent about the agenda behind the analysis with very specific questions. There is some ambiguity behind the concept of social standards which we tried to account for in the vacation, hobbies, and daily leisure categories, but acknowledge that one could be partaking in conspicuous consumption while categorizing it as a living expense, such as paying a very high rent to live in the nicest neighbourhood. The "Other" category could also be misleading because there could be some frivolous expenses that are not accounted for. 
+Self-assessments aren't ideal since the participant is require to think objectively on the spot about their finances. This could inject a considerable source of bias, and would have required a more thorough assessment method than a survey. Providing an export of a bank categorization of one's spendings would be a better method for a true representation. 
 
-Self-assessments aren't ideal since the participant is require to think objectively on the spot about their finances. This could inject a considerable source of bias, and would have required a more thorough assessment method than a survey. Providing and export of a bank categorization of one's spendings would be a better method for a true representation. 
-
-
-On the other hand, there are also a lot of psychological fe
-
-> what would you do differently next time to improve your survey/study design and why?
-
-It was good to use the point system to divide the spending because it forced the participant to consider each category of interest and then associate the rest with "other". A limitation of our design was that the 
+It was good to use the point system to divide the spending because it forced the participant to consider each category of interest in proportion to the others. The improvement we would make is engineering a clearer divide between what is considered basic needs or not and comparing the expenditures to the local average spending percentages on necessities versus conspicuous spending. 
 
 ## Results Discussion
 
 
 # Conclusion
-
-
-
 
 
 \pagebreak
