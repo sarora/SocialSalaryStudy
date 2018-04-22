@@ -80,18 +80,6 @@ Other&\text{otherwise}\\
 \]
 
 
-## Analysis Methods
-
-From the exploratory analysis, it is determined that the response variable should be modeled using a logistic regression that identifies the participants that belong to one of two groups. The first group is comprised of respondents that are deemed driven by financial wealth by indicating that they would not prioritize job satisfaction over a raise within two years and their salary ratio is above the median. The second group is at the opposite end of the spectrum specifying that they would maintain a job given satisfaction and that they expect less than the median salary ratio. 
-
-Before settling on the model features, the confounding variables had to be assessed. From the EDA performed in the Appendix [Continent section](#edacontinent), it seems viable that a person's origin may influence their spending habits and relationship to money out of cultural differences, which we would want to account for. 
-
-Figure \ref{fig:fig1}.
-
->>>>>> INSERT MODEL HERE
-
-# results and analysis
-
 ```{r eval=FALSE, echo=FALSE}
 # ANONYMIZATION ---------------------------------------------------------------
 # removing confidential data
@@ -215,19 +203,12 @@ lm_confound <- glm(group_bin ~ living_expenses +
 ```
 
 
-## Study Design Discussion {#designdisc}
 
-The [Survey Questions](#surveyq) were constructed to account for all types of spending so that the respondent could better consider their proportional spending distribution. There are many subjective and psychological features that would contribute to someone's self-assessment of expected and base salary estimates which was accounted for when stating that we are looking at a person's drive for money, therefore their perceived attitude toward financial vocational incentives. 
-
-Clarifying the spending categories is a shortcoming of our study. There is a tradeoff between making our survey straightforward and being too transparent about the agenda behind the analysis with overly specific questions. There is some ambiguity behind the concept of social standards which we tried to account for in the vacation, hobbies, consumption and daily leisure categories, but we acknowledge that one could be partaking in conspicuous consumption while categorizing it as a living expense, such as paying a very high rent to live in the nicest neighbourhood. The "Other" category could also be misleading because there could be some frivolous expenses that are not accounted for. 
-
-Self-assessments aren't ideal since the participant is required to think objectively on the spot about their finances. This could inject a considerable source of bias, and would have required a more thorough assessment method than a survey. Providing an export of a bank categorization of one's spendings would be a better method for a true representation. 
-
-It was good to use the point system to divide the spending because it forced the participant to consider each category of interest in proportion to the others. The improvement we would make is engineering a clearer divide between what is considered basic needs or not and comparing the expenditures to the local average spending percentages on necessities versus conspicuous spending. 
 
 # Analysis
 
-## methodology
+
+## Methodology
 
 Our analysis wants to compare the two defined groups (participants who are driven by wealth and those who are not) in terms of spending habits.
 
@@ -401,7 +382,8 @@ Consumption goods shows some significance. This indicates that people who are cl
 
 ```{r}
 ggplot(data = survey_results_continent, aes(x = consumption_goods, group = group, colour = group)) + 
-  geom_density(alpha = 0.2, aes(fill = group), bw = 5)
+  geom_density(alpha = 0.2, aes(fill = group), bw = 5) + 
+  labs(x = 'Consumption Goods Expense Percentage', y = 'Density', title = 'Density distributions of Consumption Good Expenditure')
 ```
 
 However, the model includes multiple comparisons. The p-values need to be adjusted in order to account for random significance.
@@ -424,9 +406,24 @@ knitr::kable(df_survey_values)
 
 ```
 
-Adjusting the p-value removes all significance from the model. The lack of significance can be attributed to the lack of more data. If more data was collected, the study would have had the potential to gain more power.
-
 # Conclusion
+
+Adjusting the p-values removes all significance from the logistic regression model. The lack of significance can be attributed to the lack of data. If more data was collected, the study would have had the potential to gain more power and make conclusive findings.
+
+Considering the lack of significance, the study concludes that the null hypothesis cannot be rejected.
+
+# Survey Study Design Reflection {#designdisc}
+
+The [Survey Questions](#surveyq) were constructed to account for all types of spending so that the respondent could better consider their proportional spending distribution. There are many subjective and psychological features that would contribute to someone's self-assessment of expected and base salary estimates which was accounted for when stating that we are looking at a person's drive for money, therefore their perceived attitude toward financial vocational incentives. 
+
+Clarifying the spending categories is a shortcoming of our study. There is a tradeoff between making our survey straightforward and being too transparent about the agenda behind the analysis with overly specific questions. There is some ambiguity behind the concept of social standards which we tried to account for in the vacation, hobbies, consumption and daily leisure categories, but we acknowledge that one could be partaking in conspicuous consumption while categorizing it as a living expense, such as paying a very high rent to live in the nicest neighbourhood. The "Other" category could also be misleading because there could be some frivolous expenses that are not accounted for. 
+
+Self-assessments are not ideal since the participant is required to think objectively on the spot about their finances. This could inject a considerable source of bias, and would have required a more thorough assessment method than a survey. Providing an export of a bank categorization of one's spendings would be a better method for a true representation. 
+
+It was good to use the point system to divide the spending because it forced the participant to consider each category of interest in proportion to the others. The improvement we would make is engineering a clearer divide between what is considered basic needs or not and comparing the expenditures to the local average spending percentages on necessities versus conspicuous spending. 
+
+
+
 
 
 \pagebreak
