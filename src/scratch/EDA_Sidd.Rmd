@@ -196,6 +196,13 @@ Below each variable is summarized. Since it is difficult to highlight important 
 sum.tb <- summary(survey_results)
 sum.tb
 ```
+
+## Analysis
+
+We want to determine whether people who are driven by wealth have different spending habits than people who are not driven by wealth. The nature of the hypotheiss and the data makes a logistic regression model the obvious choice for determining whehter any expense category is significantly different between the two groups.
+
+
+
 ## Confounding variables
 
 Each person who completed the survey had to report their country of residence. Data was collected from a number of different countries. The study's response variable is standardised salary ratio, which does not require taking the person's country into account. However, the country a person live has the potential to play a role in a person's spending habits regardless of their salary ratio. For example, a person from Africa would not necessarily spend a lot on vacations in comparison to a person from North America which may be a result of something like cultural differences.
@@ -285,7 +292,8 @@ lm_confound <- glm(group_bin ~ (living_expenses +
                   daily_leisure + 
                   consumption_goods + 
                   sports_hobbies + 
-                  other + continent), 
+                  other + continent
+                  ), 
                 data = survey_results_continent, 
                 family = binomial(link = "logit"))
 
