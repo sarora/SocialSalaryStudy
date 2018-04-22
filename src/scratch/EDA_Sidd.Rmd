@@ -131,11 +131,29 @@ It was decided to remove the values beyond ~95% confidence level. The box-plot m
 ### Remove Outliers
 
 ```{r}
-
 # remove outliers
 survey_results <- survey_results %>% 
   filter(!ratio %in% boxplot.stats(survey_results$ratio)$out)
 ```
+
+
+### Divide into GROUP A and GROUP B
+
+Group A is people who 
+
+```{r}
+##
+survey_results <- survey_results %>% mutate(group = ifelse(no_increase_acceptance == "No" & ratio > median(ratio),"A",ifelse(no_increase_acceptance == "Yes" & ratio <= median(ratio),"B", "M")))
+
+## group A are people who would not keep a job if not given a salary increase.
+survery_results_A <- survey_results %>% filter(group == "A" )
+
+## group B are people who keep a job (assuming satisfaction) regardless of a salary increase.  
+survery_results_B <- survey_results %>% filter(group == "B" )
+
+```
+
+
 
 
 Take a look at Figure \ref{fig:fig1}.
