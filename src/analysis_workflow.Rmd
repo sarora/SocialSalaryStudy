@@ -26,14 +26,14 @@ library(pwr)
 
 # Overview
 
-
 The purpose of this study to measure whether a person is driven by money or not. We found it reasonable to assume that a person who is driven by money would expect to earn more than the average person who has the same skillset and experience.
 
-Our survey has captured the salary of what a participant thinks an average person with their skills and experience should earn, as well as the salary that the participant expects to receive in 1 year's time. Taking inflation and other micro-factors into account, a participant's expected salary in a year's time shouldn't be much higher than the average person with the same skills and experience.
+Our survey has captured the salary of what a participant thinks an average person with their skills and experience should earn, as well as the salary that the participant expects to receive in 1 year's time. The average inflation rate world-wide was of approximately 3.15 per the [Statista Statistics Portal](https://www.statista.com/statistics/256598/global-inflation-rate-compared-to-previous-year/). Taking inflation and other micro-factors into account, a participant's expected salary in a year's time shouldn't be much higher than the average person with the same skills and experience.
 
 The survey captured the participant's salary in their unique currency. The survey was answered by people from various countries with different currencies. This means that we cannot compare the captured salary values between participants. An easy way of standardising these values is to handle the salary values as a ratio of expected salary over average salary. The ratio should be consistent across different currencies.
 
 For the purpose of this study, social standards will be defined as a person's inclination for a high relative consumption on leisure activities and non-essential expenditure. Our hypothesis relies on the theory that prevailing social conditions will influences one's relationship with money which would translate in whether increase in income is the priority.
+The study is inspired by [Hirsh's hypothesis](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/master/doc/references/Status-seeking-and-material-affluence--evaluating-the-H_2003_Ecological-Econ.pdf) which states that prevailing social conditions will influences one's spending on status goods and activities (status-seeking) which would translate in those with a higher disposable income being more inclined to spend on non-essential expenditures.
 
 # Data Pre-processing
 
@@ -109,7 +109,7 @@ survey_results <- survey_results %>% mutate(ratio = (salary_expect - salary_base
 
 ```
 
-### Outlier Handling
+#### Outlier Handling
 
 Having chosen to remove outliers on the basis that with a small number of observations applying the statistical method of removing outliers greater than two standard deviations could be erroneous since it cannot be deduced with certainty which distribution is being represented. That being said, a combination of visual assessments and box-plot/quantile analysis allowed a reasonable upper and lower limit to be chosen.
 
@@ -139,11 +139,11 @@ survey_results <- survey_results %>%
 
 ### Divide into GROUP A and GROUP B
 
-As mentioned, our hypothesis is comparing people who are driven by financial wealth with people who are not driven by financial wealth. Up until now we have quantified financial wealth as a measurement of salary. Even though the salary ratio is a fairly good measurement, it has its flaws. It could be the case that a person expects a higher salary, not because of financial drive, but rather becauase of something like job satisfaction. In this case, a person with a high salary ratio would not necessarily be a person who is driven by financial wealth.
+As mentioned, our hypothesis is comparing people who are driven by financial wealth with people who are not driven by financial wealth. Up until now we have quantified financial wealth as a measurement of salary. Even though the salary ratio is a fairly good measurement, it has its flaws. It could be the case that a person expects a higher salary, not because of financial drive, but rather because of something like good job performance, and thus representing satisfaction rather than financial imperatives. In this case, a person with a high salary ratio would not necessarily be a person who is driven by financial wealth.
 
 To make the criteria more strict for how we define someone who is driven by financial wealth or not, we take into account whether the person would maintain a job if they do not receive a salary increase in 2 years, even though the job satisfaction is high. A person who is driven by financial wealth, would most likely not stay in a job that doesn't provide them with a realistic salary increase. Whereas a person who is more motivated by job satisfaction would stay in the job position, regardless of not receiving an increase.
 
-The respondants are divided into two groups - those who expect a salary increase and have a high salary ratio, and those who are content with high job satisfaction and have a low salary ratio. The respondants who do not fall in one of these two groups cannot be classified as either a person who is driven by money or someone who is not driven by money (it may a a more complex classification).
+The respondants are divided into two groups - those who expect a salary increase and have a high salary ratio, and those who are content with high job satisfaction and have a low salary ratio. The respondants who do not fall in one of these two groups cannot be classified as either a person who is driven by money or someone who is not driven by money (it may be a more complex classification).
 
 ```{r}
 # grouping by wealth or not wealth groups
@@ -151,38 +151,6 @@ survey_results <- survey_results %>% mutate(group = ifelse(no_increase_acceptanc
                                             group_bin = ifelse(group == "wealth", 1, ifelse(group == "not_wealth", 0, NA)))
 
 survey_results_grouped <- survey_results %>% filter(!group %in% c("other"))
-
-```
-
-
-Take a look at Figure \ref{fig:fig1}.
-
-
-```{r fig1, echo=FALSE,fig.width=10, fig.cap="\\label{fig:fig1}This is a caption"}
-
-# #{r fig1,  fig.cap="This is a caption", fig.width=10, fig.height=6, echo=FALSE}
-# 
-# ## want to remove some outliers.ToDO
-# survey_results_filt <- survey_results %>%  filter(ratio >-0.1500000 & ratio < 1)
-# 
-# p1<- ggplot(survey_results_all_outliers)+
-#   geom_boxplot(aes(x=1, y= ratio), outlier.colour = "red", fill = "grey") +
-#       labs(x="Countries",y="Ratio", title = "With Outliers" ) 
-# 
-# p1 <- p1 + theme(axis.text.x = element_blank())
-# 
-# 
-# # for visual
-# p2<- ggplot(survey_results_filt)+
-#   geom_boxplot(aes(x=1, y = ratio), outlier.colour = "red", fill = "grey")+
-#     labs(x="Countries",y="Ratio", title = "With some outliers removed") 
-#   
-# p2<- p2 + theme(axis.text.x = element_blank())
-# 
-# # title <- ggdraw() + draw_label("Relative Display of Outliers", fontface='bold')
-# 
-# plot_grid(p1,p2)
-
 
 ```
 
@@ -199,7 +167,7 @@ sum.tb
 
 ## Analysis
 
-We want to determine whether people who are driven by wealth have different spending habits than people who are not driven by wealth. The nature of the hypotheiss and the data makes a logistic regression model the obvious choice for determining whehter any expense category is significantly different between the two groups.
+We want to determine whether people who are driven by wealth have different spending habits than people who are not driven by wealth. The nature of the hypothesis and the data makes a logistic regression model the obvious choice for determining whether any expense category is significantly different between the two groups.
 
 Before we start building the model we should consider whether we are dealing with any confounding variables.
 
@@ -262,38 +230,8 @@ lm_confound <- glm(group_bin ~ living_expenses +
 
 # summary(lm_confound)
 
-continent_anv <- anova(lm_confound_not, lm_confound, test = "LRT")
-# 
-# df_continent_anv<- summary(continent_anv) %>% broom::tidy()
-# df_continent_anv %>% select(Var2, Freq) %>% spread(Var2, Freq) %>%  str
-# knitr::kable(df_continent_anv)
-# df_continent_anv
+anova(lm_confound_not, lm_confound, test = "LRT")
 ```
-
-```{r}
-# library(dplyr)
-# stocks <- data.frame(
-#   time = as.Date('2009-01-01') + 0:9,
-#   X = rnorm(10, 0, 1),
-#   Y = rnorm(10, 0, 2),
-#   Z = rnorm(10, 0, 4)
-# )
-# stocksm <- stocks %>% gather(stock, price, -time)
-# stocksm %>% spread(stock, price)
-# stocksm %>% spread(time, price)
-# 
-# # Spread and gather are complements
-# df <- data.frame(x = c("a", "b"), y = c(3, 4), z = c(5, 6))
-# df %>% spread(x, y) %>% gather(x, y, a:b, na.rm = TRUE)
-# 
-# # Use 'convert = TRUE' to produce variables of mixed type
-# df <- data.frame(row = rep(c(1, 51), each = 3),
-#                  var = c("Sepal.Length", "Species", "Species_num"),
-#                  value = c(5.1, "setosa", 1, 7.0, "versicolor", 2))
-# df %>% spread(var, value) %>% str
-# df %>% spread(var, value, convert = TRUE) %>% str
-```
-
 
 
 Our analysis of variance test shows that the continent of a pariticipant does not significantly influence the model. The probability value isn't significant, but it is extremely close to our 0.05 significance threshold. To be safe, it would be better to influde the confounding variable in our model.
@@ -316,16 +254,6 @@ ggplot(data = survey_results_continent, aes(x = consumption_goods, y = group_bin
 ```
 
 The density plots show a slight difference between the two groups. The amount of data that we have available is fairly limited and makes it difficult to draw accurate conclusions.
-
-
-
-
-
-#### FIN at 4:26 AM
-
-
-
-
 
 
 Our assumption seems to be accurate with regards to countries not varying too greatly in their responses. There is no country that has a significantly higher or lower ratio distribution. As a sanity check, it is a good idea to combine survey answers from all participants to verify that the variance around our mean is somewhat normally distributed (the plot above makes it seem intuitive that this would be the case, but cannot make the assumption). This would verify that we are dealing with a t-distribution.
@@ -399,13 +327,6 @@ ggplot(survey_results_spendings, aes(x = value, y = variable, height = ..density
       labs(x = 'Expenses', y ='Spending Categories', title = 'All Participants Expenses Distributions', subtitle= "Grouped by Spending Categories")
 ```
 
-
-
-
-
-
-
-
 #### Additional Modelling and Exploratory Analysis
 
 ```{r}
@@ -472,9 +393,8 @@ power_analysis<- unlist(pwr.f2.test(u = no_of_coefficients, f2 = effect_size, si
 ```
 
 
-
-
-To estimate the sample size (n) for our general linear model, we use the `pwr.f2.test` from the `pwr` package. The null hypothesis is that "". This would mean their regression coefficients are statistically indistinguishable from 0. The alternative is atleast one of the coefficients is not 0. The power test has numerator and denominator degrees of freedom. The numerator degrees of freedom, `u` is the number of coefficients (minus the intercept) in our model. The denominator degrees of freedom,`v`, is the number of error degrees of freedom: $v = n-u-1$; where n is the number of samples. We use adjusted $R^2$ in $Adj R^2/(1-adj R^2)$ to calculate the effect size,`f2`. Adjusted $R^2$ indicates how well our predictors fit a curve or line, but also adjusts for the number of terms in the model. The estimated value of v from the test is $\approx$ $288$. Using the formula from above we get n as $288 + 13 +1 = 302$. This means that we need a sample size of 302 to ensure that the test of hypothesis will have 80% power to detect a significant impact of the covariates on the outcome.           
+To estimate the sample size (n) for our general linear model, we use the `pwr.f2.test` from the `pwr` package. The null hypothesis is that "the people who are driven by financial wealth and those that are driven by job
+satisfaction share the same social standards in terms of spending patterns". This would mean their regression coefficients are statistically indistinguishable from 0. The alternative is that at least one of the coefficients is not 0. The power test has numerator and denominator degrees of freedom. The numerator degrees of freedom, `u` is the number of coefficients (minus the intercept) in our model. The denominator degrees of freedom,`v`, is the number of error degrees of freedom: $v = n-u-1$; where n is the number of samples. We use adjusted $R^2$ in $Adj R^2/(1-adj R^2)$ to calculate the effect size,`f2`. Adjusted $R^2$ indicates how well our predictors fit a curve or line, but also adjusts for the number of terms in the model. The estimated value of v from the test is $\approx$ $288$. Using the formula from above we get n as $288 + 13 +1 = 302$. This means that we need a sample size of 302 to ensure that the test of hypothesis will have 80% power to detect a significant impact of the covariates on the outcome.           
 
 
 
