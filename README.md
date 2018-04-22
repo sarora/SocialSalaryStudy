@@ -4,11 +4,11 @@
 
 | Deliverables      | Description |
 |------------------|-------------|
-| [Report](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/master/doc/sss_report.pdff)   | Final Report PDF |
+| [Report](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/master/doc/sss_report.pdf)   | Final Report PDF |
 | [Report RMD](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/master/doc/sss_report.Rmd)   |  Final Report ran in Rmd |
 |[Analysis Workflow](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/master/src/analysis_report.Rmd)|Exploratory Data Analysis|
-| [Milestone 2 Commit](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/commit/a6699731ac3e9b740a113a2781e720f03c44dac5) | Final commit before release |
-| [Release v3.0](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/releases/tag/v3.0) |Milestone 1 release |
+| [Milestone 2 Commit](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/commit/0238d093af6d6c2c3525fcb0ca5c98d2f11f5864) | Final commit before release |
+| [Release v3.0](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/releases/tag/v3.0) |Milestone 2 release |
 | [Survey Monkey Link](https://www.surveymonkey.com/r/2MS6758) | Survey link |
 | [Proposal and Questions](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/vmulholl/doc/proposal.md) | Questions from survey (in case the survey has been completed and cannot be accessed) |
 
