@@ -1,0 +1,579 @@
+---
+title: "Exploratory Data Analysis"
+author: "S. Arora, J. Harmse, V. Mulholland"
+date: "`r format(Sys.time(), '%B %e, %Y')`"
+header-includes:
+- \usepackage{fancyhdr}
+- \pagestyle{fancy}
+- \fancyhead[LE,RO]{Social Salary Study}
+- \fancyfoot[CO,CE]{DSCI 554 - Experimentation and Causal Inference}
+- \fancyfoot[LE,RO]{\thepage}
+output: pdf_document
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warning=F, message=F}
+library(tidyverse); theme_set(theme_bw())
+library(cowplot)
+library(ggjoy)
+library(reshape2)
+```
+
+# Overview
+
+
+The purpose of this study to measure whether a person is driven by money or not. We found it reasonable to assume that a person who is driven by money would expect to earn more than the average person who has the same skillset and experience.
+
+Our survey has captured the salary of what a participant thinks an average person with their skills and experience should earn, as well as the salary that the participant expects to receive in 1 year's time. Taking inflation and other micro-factors into account, a participant's expected salary in a year's time shouldn't be much higher than the average person with the same skills and experience.
+
+The survey captured the participant's salary in their unique currency. The survey was answered by people from various countries with different currencies. This means that we cannot compare the captured salary values between participants. An easy way of standardising these values is to handle the salary values as a ratio of expected salary over average salary. The ratio should be consistent across different currencies.
+
+For the purpose of this study, social standards will be defined as a person's inclination for a high relative consumption on leisure activities and non-essential expenditure. Our hypothesis relies on the theory that prevailing social conditions will influences one's relationship with money which would translate in whether increase in income is the priority.
+
+# Data Pre-processing
+
+## Anonymity
+
+In order to maintain user privacy a few manipulations were handled before the raw data was uploaded to the analysis repository. Any confidential information such as IP addresses were ommited, as well as any respondents that did not accept the confidentiallity agreement. 
+
+### Pre-processing Workflow
+
+These were the first steps applied to `surveydata_clean.rds` when the data was downloaded raw from _Survey Monkey_. 
+
+
+```{r eval=FALSE}
+# removing confidential data
+survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv', skip = 1)
+survey_results <- survey_results[, 10:ncol(survey_results)]
+
+#import data
+# survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv') # local path - remove identifiers beforehand
+
+# redefine column names
+colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expect', 'no_increase_acceptance', 
+                           'living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
+                           'sports_hobbies', 'other')
+
+# spending categories
+spending_cats <- c('living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
+                           'sports_hobbies', 'other')
+
+# remove no consent
+survey_results <- survey_results %>% filter(consent %in% c('Yes'))
+
+# add observation id
+survey_results$id <- 1:nrow(survey_results)
+
+# save raw clean data
+saveRDS(survey_results, file = '../data/processed/surveydata_clean.rds')
+
+# remove all traces
+rm(survey_results)
+```
+
+Once the data is pre-processed, it is reimported and the columns and categories are defined. 
+
+```{r}
+# import clean data
+survey_results <-  readRDS(file = '../data/processed/surveydata_clean.rds')  # local path - remove identifiers beforehand
+
+# redefine column names
+colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expect', 'no_increase_acceptance',
+                              'living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods',
+                              'sports_hobbies', 'other', 'id')
+
+# spending categories
+spending_cats <- c('living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods',
+                   'sports_hobbies', 'other')
+```
+
+
+A new variable was created as a measurement of relative expected increase in salary. The benefits of using a ratio meant that there would be less extra manipulations and potential confounding variables behind adjustments for foreign currencies. 
+
+```{r}
+# ensure any NA values are set to 0
+survey_results[ , spending_cats][is.na(survey_results[,spending_cats])] <- 0
+
+# converting char to numeric
+survey_results$salary_base <- as.numeric(as.character(survey_results$salary_base))
+survey_results$salary_expect <- as.numeric(as.character(survey_results$salary_expect))
+
+# add ratio 
+survey_results <- survey_results %>% mutate(ratio = survey_results$salary_expect/survey_results$salary_base)
+```
+
+#### Outlier Handling
+
+Having chosen to remove outliers on the basis that with a small number of observations applying the statistical method of removing outliers greater than two standard deviations could be erroneous since it cannot be deduced with certainty which distribution is being represented. That being said, a combination of visual assessments and box-plot/quantile analysis allowed a reasonable upper and lower limit to be chosen.
+
+
+```{r}
+## saving a copy with all outliers.
+survey_results_all_outliers <- survey_results
+
+# remove outliers
+survey_results <- survey_results %>% 
+  filter(!ratio %in% boxplot.stats(survey_results$ratio)$out)
+
+```
+
+It was decided to remove the values beyond ~95% confidence level. The box-plot method performs a more sophisticated outlier selection than the alternative, the quantile approach, that is more rigid in the 95% threshold. Since we have less observations than ideal, it seemed more appropriate. The visualization below shows the contrast when the most extreme outliers are removed. 
+
+
+Take a look at Figure \ref{fig:fig1}.
+
+
+```{r fig1, echo=FALSE,fig.width=10, fig.cap="\\label{fig:fig1}This is a caption"}
+
+#{r fig1,  fig.cap="This is a caption", fig.width=10, fig.height=6, echo=FALSE}
+
+## want to remove some outliers.
+survey_results_filt <- survey_results_all_outliers %>% filter(ratio >0.2500000 & ratio < 2)
+
+p1<- ggplot(survey_results_all_outliers)+
+  geom_boxplot(aes(x=1, y= ratio), outlier.colour = "red", fill = "salmon") +
+      labs(x="Countries",y="Ratio", title = "With Outliers" ) 
+
+p1 <- p1 + theme(axis.text.x = element_blank())
+
+
+# for visual
+p2<- ggplot(survey_results_filt)+
+  geom_boxplot(aes(x=1, y = ratio), outlier.colour = "red", fill = "salmon")+
+    labs(x="Countries",y="Ratio", title = "With some outliers removed") 
+  
+p2<- p2 + theme(axis.text.x = element_blank())
+
+# title <- ggdraw() + draw_label("Relative Display of Outliers", fontface='bold')
+
+plot_grid(p1,p2)
+
+
+outliers <- boxplot.stats(survey_results$ratio)$out
+dh<- data.frame(outliers)
+dh
+```
+
+
+The questions were designed to minimize the potential for entry mistakes when participants entered their responses. A rule was included to ensure that the expenditure percentages summed up to 100 points, but this was not possible with the user salary through the _Survey Monkey_ interface. This process of removing outliers will filter out major mistakes in currency where the user entered that they expected a very disproportionate salary increase. 
+
+
+Below each variable is summarized. Since it is difficult to highlight important information from a summary table containing so many variables, a jitter-violin plot was also generated. 
+
+```{r}
+sum.tb <- summary(survey_results)
+sum.tb
+```
+
+```{r}
+ggplot(data = survey_results, aes(x = country, y = ratio, colour = country, fill = country)) + 
+  geom_jitter() + 
+  geom_violin(alpha = 0.2) +
+  theme(axis.text.x = element_text(angle = 25, hjust = 0.7, vjust = 0.8))
+```
+
+Our assumption seems to be accurate with regards to countries not varying too greatly in their responses. There is no country that has a significantly higher or lower ratio distribution. As a sanity check, it is a good idea to combine survey answers from all participants to verify that the variance around our mean is somewhat normally distributed (the plot above makes it seem intuitive that this would be the case, but cannot make the assumption). This would verify that we are dealing with a t-distribution.
+
+```{r}
+ggplot(data = survey_results, aes(x = ratio)) + 
+  geom_density(colour = 'red', fill = 'red', alpha = 0.2) +
+  labs(x = 'Salary Change Ratio', y ='Probability Density', title = 'All Participants Salary Ratio Distribution')
+```
+
+
+### Evaluating the Response
+
+The study is interested in the ratio distribution above. Is there any correlation between the above ratio and social standards? The premise of the study was to develop a metric that would indicate the inclination of individuals to see financial gain as the main driver for success and determine if there is a relationship with the way their income is spent. Three variables were collected that pertain to our model's dependent variable which include:
+
+| Dependent Features       | Description                                                                |
+|--------------------------|----------------------------------------------------------------------------|
+| `salary_base`            | An indicator meant to be a subjective baseline of what salary a <br> person of their expertise would earn.      |
+| `salary_expect`          | The expected salary combined with the base salary provides a relative <br> indicator to the respondents pursuit of monetary gains. |
+| `no_increase_acceptance` | A binary metric serves as a safety check against false positives, that is respondents <br> that may have over-exagerated  their expected salary skewing <br> the impression of interest in monetary gain while in reality being content with their current situation.  |
+| `ratio`                  | This is a calculated metric that simplifies handling respondent's country selection.                                  |
+
+The survey also captured the percentages of the main expenses of each participant. Each participant had to assign percentages that adds up to 100%. The different expense categories were strategically chosen which are believed to relate to a person's social standards. For example, it is believed that a person who spends a large percentage on vacations and daily leisure most likely has higher social standards than a person who contributes most of their salary to savings. The hypothesis is that a person with higher social standards will have a higher salary ratio as described above.
+
+In theory this makes sense to simply compare these expense percentages to the salary ratios and look for any significant correlation. But in the real world there are many confounders that have to be accounted for. For example, a person who is close to retirement will most likely not expect an increase in the coming year, but may spend a large portion of their salary on vacations and daily leisure.
+
+It isn't always as clear-cut as to say that the closer you are to retirement, the more you will spend on vacation. Or on the other side of the spectrum, it cannot be assumed that a young person won't spend a large percentage of their income on traveling.
+
+The first confounder that we believe is of importance, is whether a person prefers job satisfaction over an increase in salary. The survey raised the question whether a person would keep their job if they don't receive a salary increase in two years, given high job satisfaction.
+
+A person who spends a lot on vacation and leisure (which can be either the younger or older generation) may strive for a higher salary, but the possibility exists that they don't - possibly depending whether they value job satisfaction over a salary increase.
+
+```{r}
+ggplot(survey_results, aes(x = ratio, group = no_increase_acceptance, colour = no_increase_acceptance)) + 
+  geom_density(aes(fill = no_increase_acceptance), alpha = 0.2)  +
+  labs(x = 'Salary Change Ratio', y ='Probability Density', title = 'All Participants Salary Ratio Distribution', subtitle= "Grouped by Accepted/Declined No-increase in Salary")
+```
+
+The plot above shows similar salary ratio distributions for participants who prefer high job satisfaction as those who prefer a salary increase. It does seem as if a person who has a higher salary ratio has a higher probability of prefering an increase over job satisfaction, even though this probability is not significant. However, it will be of more importance if the distributions looked different for people with different types of expenses.
+
+It is difficult to visualize the interaction between expenses, salary ratio and job satisfaction versus salary increase preference. It seems more logical and of statistical importance to fit comparitive models and observe whether the confounder variable adds any value to the model.
+
+The salary ratio is a continuous variable and from our ratio probability distribution earlier, we saw that the standard deviation is fairly normally distributed around the mean after removing outliers. For this reason a linear regression model seems like a sensible model to fit to our data.
+
+We want to determine whether the preference for job satisfaction interacts with with our explanatory variables. The explanatory variables in our case are the expense categories. We need to compare an additive linear model with a model that considers job satisfaction as a variable that interacts with our expense categories. The following joy plot displays the distribution of participant spendings. 
+
+```{r, fig.width=10}
+# additional wrangling for plotting purposes
+survey_results_spendings <- survey_results %>% select(spending_cats)
+survey_results_spendings <- map_df(survey_results_spendings, as.numeric)
+survey_results_spendings<- melt(survey_results_spendings)
+
+# joy plot per participant
+ggplot(survey_results_spendings, aes(x = value, y = variable, height = ..density.., fill = variable ))+
+  geom_joy(stat = "density", bw =2.5)+
+    scale_y_discrete(breaks = c("living_expenses","savings","vacation","daily_leisure","consumption_goods","sports_hobbies","other"),labels=c("Living   Expenses","Savings","Vacation","Daily Leisure","Consumption Goods","Sports Hobbies","Other")) +
+  theme(legend.position = "None") +
+      labs(x = 'Expenses (%)', y ='Spending Categories', title = 'All Participants Expenses Distributions', subtitle= "Grouped by Spending Categories")
+```
+
+#### Additional Modelling and Exploratory Analysis
+
+```{r}
+# model without interaction
+lm_survey <- lm(ratio ~ living_expenses + 
+                  savings + 
+                  vacation + 
+                  daily_leisure + 
+                  consumption_goods + 
+                  sports_hobbies + 
+                  other, data = survey_results)
+
+summary(lm_survey)
+```
+
+Without any interaction, none of the expenses carry any statistical significance. Below we allow the job satisfaction versus salary increase preference to interact with the expense explanatory variables.
+
+```{r}
+# model with interaction
+lm_survey <- lm(ratio ~ no_increase_acceptance:(living_expenses + 
+                  savings + 
+                  vacation + 
+                  daily_leisure + 
+                  consumption_goods + 
+                  sports_hobbies + 
+                  other), data = survey_results)
+
+summary(lm_survey)
+```
+
+Above we see that that the job satisfaction confounder variable does contribute towards the correlation between daily leisure, vacation and salary ratio.
+
+Below we visualize daily leisure while accounting for our confounder variable.
+
+```{r}
+ggplot(survey_results, aes(y = ratio, x = daily_leisure, group = no_increase_acceptance, colour = no_increase_acceptance)) + 
+  geom_point(aes(fill = no_increase_acceptance), alpha = 0.2) + 
+  geom_smooth(method = "lm") +
+  labs(x = 'Daily Leisure Spending', y ='Salary Change Ratio', title = 'Linear Model Fit', subtitle= "Grouped by Confounding Variable")
+```
+
+Even though the model found some significance, our visualization seems to disagree to an extent. It might be the daily leisure outlier value that is contributing towards the difference in slopes. The difference in slopes is also quite marginal.
+
+We aren't directly interested in a person's preference between job satisfaction and salary increase, but we do need to take into account how this variable is influencing our study. There are various ways of dealing with confounding variables, but given our our dataset size, our options are limited. For now, including this interaction in our model should be sufficient to maintain awareness of its effect. We should also strongly consider removing higher leverage outliers for the different expense categories which may eliminate the effect of the confounding variable, especially in the case above as linear regression model are highly suceptible to outliers.
+
+Below we visualize vacation while taking our confounding variable into account.
+
+```{r}
+ggplot(survey_results, aes(y = ratio, x = vacation, group = no_increase_acceptance, colour = no_increase_acceptance)) + 
+  geom_point(aes(fill = no_increase_acceptance), alpha = 0.2) + 
+  geom_smooth(method = "lm") +
+  labs(x = 'Vacation Spending', y ='Salary Change Ratio', title = 'Linear Model Fit', subtitle= "Grouped by Confounding Variable")
+```
+
+The difference in slopes is more radical in this case. It would appear that people who spend a larger percentage on vacation have a larger salary ratio **only** if they prefer a salary increase. The confidence intervals are fairly wide, but there might be some truth in the finding. It could contribute towards our hypothesis - people who spend a large percentage on vacation may be the people who are driven by money. In this case, it seems as if our confounding variable interaction could support our hypothesis - people who prefer a salary increase above job satisfaction are those with (possibly) higher social standards (we should be careful to assume that vacation is a direct indication of social standards) and are the same people who expect a higher salary ratio. However, the lack of statistical significance (we aren't yet considering adjusted p-values) and small number of observations mean that we cannot draw any conclusions. However, it is important to differentiate between the people who prefer job satisfaction and those who prefer an increase.
+
+
+
+# More Analysis
+
+```{r}
+# model with interaction
+lm_survey <- glm( as.factor(no_increase_acceptance) ~  (living_expenses + 
+                  savings + 
+                  vacation + 
+                  daily_leisure + 
+                  consumption_goods + 
+                  sports_hobbies + 
+                  other), 
+                  family=binomial(link='logit'),
+                  data = survey_results)
+summary(lm_survey)
+```
+
+## Propensity Score
+
+
+
+
+The independent variable of interest is the acceptance of no increase (`no_increase_acceptance`) and the salary ratio is the dependent variable.
+
+```{r}
+# results are standardized
+survey_results %>%
+  mutate(ratio_std = (ratio - mean(ratio)) / sd(ratio)) %>% # ratio standardization
+  group_by(no_increase_acceptance) %>%
+  summarise(mean_ratio = mean(ratio_std))
+```
+
+
+```{r}
+# if data is previously standardized
+survey_results %>%
+  group_by(no_increase_acceptance) %>%
+  summarise(n_participants = n(),
+            mean_ratio = mean(ratio),
+            std_error = sd(ratio) / sqrt(n_participants))
+```
+
+
+```{r}
+with(survey_results, t.test(ratio ~ no_increase_acceptance))
+```
+
+
+```{r}
+cov <- c('living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 'sports_hobbies', 'other')
+survey_results %>%
+  group_by(no_increase_acceptance) %>%
+  select(one_of(cov)) %>%
+  summarise_all(funs(mean(., na.rm = T)))
+```
+
+T-test is used to evaluate if the difference in means is statistically significant.
+
+```{r}
+lapply(cov, function(v) {
+    t.test(unlist(survey_results[, v]) ~ unlist(survey_results[, 'no_increase_acceptance']))
+})
+```
+
+```{r}
+
+binom_ps <- glm(as.factor(no_increase_acceptance) ~ (living_expenses + 
+                  savings + 
+                  vacation + 
+                  daily_leisure + 
+                  consumption_goods + 
+                  sports_hobbies + 
+                  other), 
+            family = binomial(), data = survey_results)
+summary(binom_ps)
+
+lm_survey <- glm( as.factor(no_increase_acceptance) ~  (living_expenses + 
+                  savings + 
+                  vacation + 
+                  daily_leisure + 
+                  consumption_goods + 
+                  sports_hobbies + 
+                  other), 
+                  family=binomial(link='logit'),
+                  data = survey_results)
+summary(lm_survey)
+```
+
+```{r}
+prs_df <- data.frame(pr_score = predict(binom_ps, type = "response"),
+                     no_increase_accept = binom_ps$model['as.factor(no_increase_acceptance)'])
+head(prs_df)
+```
+
+```{r}
+labs <- paste("Accepting no salary increase:", c("Yes", "No"))
+prs_df %>%
+  mutate(no_increase_accept = ifelse(as.factor.no_increase_acceptance. == 1, labs[1], labs[2])) %>%
+  ggplot(aes(x = pr_score)) +
+  geom_histogram(color = "white") +
+  facet_wrap(~as.factor.no_increase_acceptance.) +
+  xlab("Probability of accepting no increase") +
+  theme_bw()
+```
+
+
+
+```{r}
+survey_results
+
+survey_results_nomiss <- survey_results %>%  
+  select(ratio, no_increase_acceptance, one_of(cov)) %>%
+  na.omit() %>% mutate(no_increase=if_else(no_increase_acceptance == "Yes", 1, 0))
+library(MatchIt)
+mod_match <- matchit(no_increase ~ living_expenses + savings + vacation + daily_leisure + consumption_goods + sports_hobbies + other, ratio=1,
+                     method = "nearest", data = survey_results_nomiss)
+
+summary(mod_match)
+
+
+# trying with ratio of 5 control cases to one treatment
+mod_match <- matchit(no_increase ~ living_expenses + savings + vacation + daily_leisure + consumption_goods + sports_hobbies + other, ratio=5,
+                     method = "nearest", data = survey_results_nomiss)
+
+summary(mod_match)
+
+
+plot(mod_match, type = "jitter")
+plot(mod_match, type = "hist")
+```
+
+```{r}
+dta_m <- match.data(mod_match)
+dim(dta_m)
+```
+
+```{r}
+fn_bal <- function(dta, variable) {
+  dta$variable <- dta[, variable]
+  # if (variable == 'w3income') dta$variable <- dta$variable / 10^3
+  # dta$catholic <- as.factor(dta$catholic)
+  support <- c(min(dta$variable), max(dta$variable))
+  ggplot(dta, aes(x = distance, y = variable, color = no_increase_acceptance)) +
+    geom_point(alpha = 0.2, size = 1.3) +
+    geom_smooth(method = "loess", se = F) +
+    xlab("Propensity score") +
+    ylab(variable) +
+    theme_bw() +
+    ylim(support)
+}
+
+library(gridExtra)
+grid.arrange(
+   fn_bal(dta_m, "living_expenses"),
+   fn_bal(dta_m, "savings") + theme(legend.position = "none"),
+   fn_bal(dta_m, "vacation"),
+   fn_bal(dta_m, "daily_leisure") + theme(legend.position = "none"),
+   fn_bal(dta_m, "consumption_goods"),
+   nrow = 3, widths = c(1, 0.8)
+)
+```
+
+Our grouping variable is `no_increase_acceptance` and our matching variables are all the spending categories (`living_expenses`, `savings`, `vacation`, `daily_leisure`, `consumption_goods`, `sports_hobbies`, `other`) where we aim to equalize the groups on. 
+
+```{r}
+# trying with ratio of 5 control cases to one treatment
+mod_match <- matchit(no_increase ~ living_expenses + savings + vacation + daily_leisure + consumption_goods + sports_hobbies + other,
+                     method = "subclass", data = survey_results_nomiss)
+
+summary(mod_match)
+
+
+plot(mod_match, type = "jitter")
+plot(mod_match, type = "hist")
+
+dta_m <- match.data(mod_match)
+dim(dta_m)
+
+fn_bal <- function(dta, variable) {
+  dta$variable <- dta[, variable]
+  # if (variable == 'w3income') dta$variable <- dta$variable / 10^3
+  # dta$catholic <- as.factor(dta$catholic)
+  support <- c(min(dta$variable), max(dta$variable))
+  ggplot(dta, aes(x = distance, y = variable, color = no_increase_acceptance)) +
+    geom_point(alpha = 0.2, size = 1.3) +
+    geom_smooth(method = "loess", se = F) +
+    xlab("Propensity score") +
+    ylab(variable) +
+    theme_bw() +
+    ylim(support)
+}
+
+library(gridExtra)
+grid.arrange(
+   fn_bal(dta_m, "living_expenses"),
+   fn_bal(dta_m, "savings") + theme(legend.position = "none"),
+   fn_bal(dta_m, "vacation"),
+   fn_bal(dta_m, "daily_leisure") + theme(legend.position = "none"),
+   fn_bal(dta_m, "consumption_goods"),
+   nrow = 3, widths = c(1, 0.8)
+)
+```
+
+
+
+```{r}
+# trying with ratio of 5 control cases to one treatment
+mod_match <- matchit(no_increase ~ living_expenses + savings + vacation + daily_leisure + consumption_goods + sports_hobbies + other,
+                     method = "cem", data = survey_results_nomiss)
+
+summary(mod_match)
+
+
+plot(mod_match, type = "jitter")
+plot(mod_match, type = "hist")
+
+dta_m <- match.data(mod_match)
+dim(dta_m)
+
+fn_bal <- function(dta, variable) {
+  dta$variable <- dta[, variable]
+  # if (variable == 'w3income') dta$variable <- dta$variable / 10^3
+  # dta$catholic <- as.factor(dta$catholic)
+  support <- c(min(dta$variable), max(dta$variable))
+  ggplot(dta, aes(x = distance, y = variable, color = no_increase_acceptance)) +
+    geom_point(alpha = 0.2, size = 1.3) +
+    geom_smooth(method = "loess", se = F) +
+    xlab("Propensity score") +
+    ylab(variable) +
+    theme_bw() +
+    ylim(support)
+}
+
+library(gridExtra)
+grid.arrange(
+   fn_bal(dta_m, "living_expenses"),
+   fn_bal(dta_m, "savings") + theme(legend.position = "none"),
+   fn_bal(dta_m, "vacation"),
+   fn_bal(dta_m, "daily_leisure") + theme(legend.position = "none"),
+   fn_bal(dta_m, "consumption_goods"),
+   nrow = 3, widths = c(1, 0.8)
+)
+```
+
+```{r}
+
+# trying with ratio of 5 control cases to one treatment
+mod_match <- matchit(no_increase ~ living_expenses + savings + vacation + daily_leisure + consumption_goods + sports_hobbies + other,
+                     method = "subclass", data = survey_results_nomiss)
+
+summary(mod_match)
+
+
+plot(mod_match, type = "jitter")
+plot(mod_match, type = "hist")
+
+dta_m <- match.data(mod_match)
+dim(dta_m)
+
+fn_bal <- function(dta, variable) {
+  dta$variable <- dta[, variable]
+  # if (variable == 'w3income') dta$variable <- dta$variable / 10^3
+  # dta$catholic <- as.factor(dta$catholic)
+  support <- c(min(dta$variable), max(dta$variable))
+  ggplot(dta, aes(x = distance, y = variable, color = no_increase_acceptance)) +
+    geom_point(alpha = 0.2, size = 1.3) +
+    geom_smooth(method = "loess", se = F) +
+    xlab("Propensity score") +
+    ylab(variable) +
+    theme_bw() +
+    ylim(support)
+}
+
+library(gridExtra)
+grid.arrange(
+   fn_bal(dta_m, "living_expenses"),
+   fn_bal(dta_m, "savings") + theme(legend.position = "none"),
+   fn_bal(dta_m, "vacation"),
+   fn_bal(dta_m, "daily_leisure") + theme(legend.position = "none"),
+   fn_bal(dta_m, "consumption_goods"),
+   nrow = 3, widths = c(1, 0.8)
+)
+```
+
+
+               
