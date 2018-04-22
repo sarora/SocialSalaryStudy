@@ -48,13 +48,8 @@ The study is inspired by [Hirsh's hypothesis](https://github.ubc.ca/ubc-mds-2017
 
 A survey was conducted on _Survey Monkey_ to address the question at hand. The intended audience was originally our MDS class, but the invitation was extended to our social media accounts (LinkedIn, Facebook, etc.). The 5 questions in the Appendix under [Survey Questions](#surveyq) are conceptualized from both pertinent topics, one pertaining to the salary motivations and the latter is a measure of a participants social standards. This is admittedly a difficult concept to measure, thus our focus is mainly to delineated the difference between essential expenditure versus lifestyle enhacement spendings. The vacation spending category is considered a non-essential category since it can be extrapolated that any non-conspicuous travels would (such as traveling to a nearby town to visit relatives) will only make up a marginal proportion of the overall spending. The paper [Conspicuous Consumption Applied to Tourism Destination](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/master/doc/references/Conspicuous%20Consumption%20Applied%20to%20Tourism%20Destination.pdf) states that the location or purpose of vacation will help determine whether the spending is categorized as conspicuous or not. The daily leisure, hobbies and consumer goods catgories are all deemed to fall under the non-necessary spending categories and the living expenses, savings and other are classified as basic needs. The [Study Design discussion](#designdisc) will elaborate on whether these assumptions were truly justified at the phase of study design. 
 
-> INSERT SOURCE ABOUT CONSPICUOUS SPENDING AND VACATION
 
 ## Data Collection Methods
-
-> Survey
-> Outliers
-> talk about how answer inputs were chosen.
 
 Certain safety checks are put in place to prevent users from entering invalid data. For instance, the spending categories have to add up to 100% of their expenditure
 
@@ -239,9 +234,6 @@ It was good to use the point system to divide the spending because it forced the
 
 
 # Conclusion
-
-
-
 
 
 \pagebreak
