@@ -93,7 +93,7 @@ spending_cats <- c('living_expenses', 'savings', 'vacation', 'daily_leisure', 'c
 ```
 
 
-A new variable was created as a measurement of relative expected increase in salary. The benefits of using a ratio meant that there would be less extra manipulations and potential confounding variables behind adjustments for foreign currencies. 
+The way that we are measuring a person's drive for financial weatlh is by comparing a person's expected salary to the base salary the person would expect to earn. We are using the equation $(Salary_{expect} - Salary_{base})/Salary_{base}$. In most cases a person would not expect to receive a large salary increase in a year's time. If a person's salary ratio is higher than that of the average person, it could likely be due to personal drive above and beyond that of a similar person with no expectional drive for earning a higher salary.
 
 ```{r}
 # ensure any NA values are set to 0
@@ -139,21 +139,20 @@ survey_results <- survey_results %>%
 
 ### Divide into GROUP A and GROUP B
 
-Group A is people who 
+As mentioned, our hypothesis is comparing people who are driven by financial wealth with people who are not driven by financial wealth. Up until now we have quantified financial wealth as a measurement of salary. Even though the salary ratio is a fairly good measurement, it has its flaws. It could be the case that a person expects a higher salary, not because of financial drive, but rather becauase of something like job satisfaction. In this case, a person with a high salary ratio would not necessarily be a person who is driven by financial wealth.
+
+To make the criteria more strict for how we define someone who is driven by financial wealth or not, we take into account whether the person would maintain a job if they do not receive a salary increase in 2 years, even though the job satisfaction is high. A person who is driven by financial wealth, would most likely not stay in a job that doesn't provide them with a realistic salary increase. Whereas a person who is more motivated by job satisfaction would stay in the job position, regardless of not receiving an increase.
+
+The respondants are divided into two groups - those who expect a salary increase and have a high salary ratio, and those who are content with high job satisfaction and have a low salary ratio. The respondants who do not fall in one of these two groups cannot be classified as either a person who is driven by money or someone who is not driven by money (it may a a more complex classification).
 
 ```{r}
-##
-survey_results <- survey_results %>% mutate(group = ifelse(no_increase_acceptance == "No" & ratio > median(ratio),"A",ifelse(no_increase_acceptance == "Yes" & ratio <= median(ratio),"B", "M")))
+# grouping by wealth or not wealth groups
+survey_results <- survey_results %>% mutate(group = ifelse(no_increase_acceptance == "No" & ratio > median(ratio),"wealth",ifelse(no_increase_acceptance == "Yes" & ratio <= median(ratio),"not_wealth", "other")), 
+                                            group_bin = ifelse(group == "wealth", 1, ifelse(group == "not_wealth", 0, NA)))
 
-## group A are people who would not keep a job if not given a salary increase.
-survery_results_A <- survey_results %>% filter(group == "A" )
-
-## group B are people who keep a job (assuming satisfaction) regardless of a salary increase.  
-survery_results_B <- survey_results %>% filter(group == "B" )
+survey_results_grouped <- survey_results %>% filter(!group %in% c("other"))
 
 ```
-
-
 
 
 Take a look at Figure \ref{fig:fig1}.
@@ -161,28 +160,28 @@ Take a look at Figure \ref{fig:fig1}.
 
 ```{r fig1, echo=FALSE,fig.width=10, fig.cap="\\label{fig:fig1}This is a caption"}
 
-#{r fig1,  fig.cap="This is a caption", fig.width=10, fig.height=6, echo=FALSE}
-
-## want to remove some outliers.ToDO
-survey_results_filt <- survey_results %>%  filter(ratio >-0.1500000 & ratio < 1)
-
-p1<- ggplot(survey_results_all_outliers)+
-  geom_boxplot(aes(x=1, y= ratio), outlier.colour = "red", fill = "grey") +
-      labs(x="Countries",y="Ratio", title = "With Outliers" ) 
-
-p1 <- p1 + theme(axis.text.x = element_blank())
-
-
-# for visual
-p2<- ggplot(survey_results_filt)+
-  geom_boxplot(aes(x=1, y = ratio), outlier.colour = "red", fill = "grey")+
-    labs(x="Countries",y="Ratio", title = "With some outliers removed") 
-  
-p2<- p2 + theme(axis.text.x = element_blank())
-
-# title <- ggdraw() + draw_label("Relative Display of Outliers", fontface='bold')
-
-plot_grid(p1,p2)
+# #{r fig1,  fig.cap="This is a caption", fig.width=10, fig.height=6, echo=FALSE}
+# 
+# ## want to remove some outliers.ToDO
+# survey_results_filt <- survey_results %>%  filter(ratio >-0.1500000 & ratio < 1)
+# 
+# p1<- ggplot(survey_results_all_outliers)+
+#   geom_boxplot(aes(x=1, y= ratio), outlier.colour = "red", fill = "grey") +
+#       labs(x="Countries",y="Ratio", title = "With Outliers" ) 
+# 
+# p1 <- p1 + theme(axis.text.x = element_blank())
+# 
+# 
+# # for visual
+# p2<- ggplot(survey_results_filt)+
+#   geom_boxplot(aes(x=1, y = ratio), outlier.colour = "red", fill = "grey")+
+#     labs(x="Countries",y="Ratio", title = "With some outliers removed") 
+#   
+# p2<- p2 + theme(axis.text.x = element_blank())
+# 
+# # title <- ggdraw() + draw_label("Relative Display of Outliers", fontface='bold')
+# 
+# plot_grid(p1,p2)
 
 
 ```
@@ -198,12 +197,112 @@ sum.tb <- summary(survey_results)
 sum.tb
 ```
 
+## Analysis
+
+We want to determine whether people who are driven by wealth have different spending habits than people who are not driven by wealth. The nature of the hypotheiss and the data makes a logistic regression model the obvious choice for determining whehter any expense category is significantly different between the two groups.
+
+
+
+## Confounding variables
+
+Each person who completed the survey had to report their country of residence. Data was collected from a number of different countries. The study's response variable is standardised salary ratio, which does not require taking the person's country into account. However, the country a person live has the potential to play a role in a person's spending habits regardless of their salary ratio. For example, a person from Africa would not necessarily spend a lot on vacations in comparison to a person from North America which may be a result of something like cultural differences.
+
+We need to consider whether country has any significant effect on either out explanatory expense variables or our response variable.
+
 ```{r}
-ggplot(data = survey_results, aes(x = country, y = ratio, colour = country, fill = country)) + 
+ggplot(data = survey_results_grouped, aes(x = country, y = ratio, colour = country, fill = country)) + 
   geom_jitter() + 
    geom_violin(alpha = 0.2) +
     theme(axis.text.x = element_text(angle = 25, hjust = 0.7, vjust = 0.8), legend.position = "none")
 ```
+
+After removing the observations that do not match our criteria for either a person who is driven by wealth or not driven by wealth, we are left with a relatively small number of observations. The visualization above shows a number of single observations for different countries, but quite a few observations from Canada, South Africa and the US.
+
+The simplest way of determining whether country has an influence on our model, we should influde a person's country as an explanatory variable and determine whether this variable has any statistical significance. Country is a categorical variable which makes the single observations difficult to work with when trying to determine its effect. A arguably logical solution to the handling of the single observations would be to group the countries by similarities. Seeing that Canada and the United States of America are neighbouring countries it we can group these two countries as `North America`.
+
+South Africa, Nigeria and Botswana hjhave a lot in common in terms of cultural lifestyle, which means that we could group these observations as `Africa`. The other single observations should be omitted for this comparison, because it would require arbitrary assumptions where these data points would fit in.
+
+```{r}
+survey_results_grouped <- survey_results_grouped %>% mutate(continent = 
+                                                              ifelse(country %in% c("United States of America (USA)", 
+                                                                                    "Canada"), 
+                                                                     'North America', 
+                                                                     ifelse(country %in% c("Botswana", 
+                                                                                           "Nigeria", 
+                                                                                           "South Africa"), 
+                                                                            'Africa', 
+                                                                            NA)))
+
+survey_results_continent <- survey_results_grouped %>% filter(!is.na(continent))
+```
+
+```{r}
+# # testing the effect of continent
+# lm_confound <- lm(ratio ~ (living_expenses + 
+#                   # savings + 
+#                   vacation + 
+#                   daily_leisure + 
+#                   # consumption_goods + 
+#                   sports_hobbies + 
+#                   # other + 
+#                   continent):group
+#                     , 
+#                 data = survey_results_continent)
+# 
+# summary(lm_confound)
+```
+
+```{r}
+# # testing the effect of continent
+# lm_confound_0 <- lm(ratio ~ (living_expenses + 
+#                   # savings + 
+#                   vacation + 
+#                   daily_leisure + 
+#                   # consumption_goods + 
+#                   sports_hobbies + 
+#                   # other + 
+#                   continent)
+#                     , 
+#                 data = survey_results_continent %>% filter(group_bin == 0))
+# 
+# summary(lm_confound_0)
+```
+
+```{r}
+# # testing the effect of continent
+# lm_confound_1 <- lm(ratio ~ (living_expenses + 
+#                   # savings + 
+#                   vacation + 
+#                   daily_leisure + 
+#                   # consumption_goods + 
+#                   sports_hobbies + 
+#                   # other + 
+#                   continent)
+#                     , 
+#                 data = survey_results_continent %>% filter(group_bin == 1))
+# 
+# summary(lm_confound_1)
+```
+
+```{r}
+# testing the effect of continent
+lm_confound <- glm(group_bin ~ (living_expenses + 
+                  savings + 
+                  vacation + 
+                  daily_leisure + 
+                  consumption_goods + 
+                  sports_hobbies + 
+                  other + continent
+                  ), 
+                data = survey_results_continent, 
+                family = binomial(link = "logit"))
+
+summary(lm_confound)
+```
+
+
+
+
 
 Our assumption seems to be accurate with regards to countries not varying too greatly in their responses. There is no country that has a significantly higher or lower ratio distribution. As a sanity check, it is a good idea to combine survey answers from all participants to verify that the variance around our mean is somewhat normally distributed (the plot above makes it seem intuitive that this would be the case, but cannot make the assumption). This would verify that we are dealing with a t-distribution.
 
