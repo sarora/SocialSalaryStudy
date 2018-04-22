@@ -1,0 +1,72 @@
+---
+title: "Social Salary Study"
+author: "S. Arora, J. Harmse, V. Mulholland"
+date: "`r format(Sys.time(), '%B %e, %Y')`"
+header-includes:
+- \usepackage{fancyhdr}
+- \pagestyle{fancy}
+- \fancyhead[LE,RO]{Social Salary Study}
+- \fancyfoot[CO,CE]{DSCI 554 - Experimentation and Causal Inference}
+- \fancyfoot[LE,RO]{\thepage}
+output: pdf_document
+urlcolor: blue
+---
+
+# question
+
+<h4 align="center"> Is a person's social standards correlated with a person's expected salary? </a></h4>
+
+> Define social standards
+> Define the relationship behind 
+
+The goal of this study is to determine whether a person's social standards are correlated with a person's expected salary. The idea behind the hypothesis is that people who have higher social standards expect a higher salary. The opposite can also be argued - does a person's expected salary determine a person's social standards? This study does not aim to determine which variables are explanatory or a response, but rather to determine whether a strong correlation exists between social standards and expected salary. We found it reasonable to assume that a person who is driven by money would expect to earn more than the average person who has the same skillset and experience.
+
+# methods
+
+The test statistic will be attempting to identify if there is a strong correlation between social standards and a person's salary expectations. A positive correlation would be expected between the continuous numerical measurement of social standards and the normalized continuous expected salary range. Social standards and expected salaries are expected to both form t-distributions given the survey responses. A linear regression model seems to be an appropriate choice for the study, since our response variable (expected salary) is a continuous range and the explanatory variables related to social standards are expected to have a linear relationship with expected salary.
+
+## survey study design
+
+The survey questions are divided into two groups, one pertaining to the salary motivations and the latter is a measure of a participants social standards. This is admittedly a diffult concept to measure, thus our focussed is mainly to delineated the difference between essential expenditure versus lifestyle enhacement spendings. 
+
+Certain safety checks are put in place to prevent users from entering invalid data. For instance, the spending categories have to add up to 100% of their expenditure
+
+> What is your country of employment/future employment? (used for determining currency for following questions)
+> Assuming the country's currency specified above, what should someone with your qualifications and experience expect to receive as an annual salary?
+> Assuming the country's currency specified above, what is the annual salary that you aim to receive 1 year from now?
+> Assuming high job satisfaction, would you keep a job that does not give you a salary increase over the next two years?
+> Please assign an approximate percentage of your current yearly expenses to the following categories (must sum up to 100).
+  * Living Expenses (utilities, rent, mortgage, transportation, property taxes if owner, etc.)
+  * Savings (retirement, investments, emergency funds, etc.)
+  * Vacation (lodging, transportation, day trips, etc.)
+  * Daily Leisure (eating out, books, movies, self-care, etc.)
+  * Consumption Goods (clothing, electronics, other luxury items, etc.)
+  * Personal Sports and Hobbies (sporting goods and services, gym, arts and crafts, etc.)
+  * Other (health care, taxes, dependent expenses, etc.)
+
+## data collection methods
+
+## analysis methods
+
+# results and analysis
+
+# Discussion
+
+> what did you do well to make this study as causal as possible?
+> what was not done well and how did that effect your studies conclusions?
+
+Clarifying the spending categories is a shortcoming of our study. There is a tradeoff between making our survey straightforward and being too transparent about the agenda behind the analysis with very specific questions. There is some ambiguity behind the concept of social standards which we tried to account for in the vacation, hobbies, and daily leisure categories, but acknowledge that one could be partaking in conspicuous consumption while categorizing it as a living expense, such as paying a very high rent to live in the nicest neighbourhood. The "Other" category could also be misleading because there could be some frivolous expenses that are not accounted for. 
+
+> what would you do differently next time to improve your survey/study design and why?
+
+It was good to use the point system to divide the spending beca
+
+## discussion of the results
+
+## discussion of your survey/study design
+
+# Conclusion
+
+# Appendix
+
+

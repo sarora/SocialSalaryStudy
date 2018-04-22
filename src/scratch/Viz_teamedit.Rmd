@@ -2,26 +2,17 @@
 title: "Viz"
 author: "Sidd"
 date: "April 9, 2018"
-output:
-  pdf_document: default
-  html_document: default
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
+```{r}
 library(tidyverse)
 library(ggjoy)
 library(reshape2)
-library(cowplot)
 ```
 
 
@@ -29,21 +20,13 @@ library(cowplot)
 
 
 ```{r}
-suppressMessages(temp <- read_csv(file = '../data/raw/Demographic Survey.csv')) # local path - remove identifiers beforehand
 
-temp <- temp[, 10:ncol(temp)]
+# import clean data
+suppressMessages(survey_results <- readRDS(file = '../data/processed/surveydata_clean.rds')) # local path - remove identifiers beforehand
 
-survey_results <- temp
-
-colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expect', 'no_increase_acceptance', 
-                           'living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
-                           'sports_hobbies', 'other')
-
+# list expenditure categories
 spending_cats <- c('living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
                            'sports_hobbies', 'other')
-
-# remove no consent
-survey_results <- survey_results %>% filter(consent %in% c('Yes')) 
 
 # converting char to numeric
 survey_results$salary_base <- as.numeric(as.character(survey_results$salary_base))
@@ -54,13 +37,11 @@ survey_results <- survey_results %>%  mutate(ratio = salary_expect/salary_base )
 
 
 # remove outliers
-#survey_results <- survey_results %>% 
- # filter(ratio < 10 & 
-  #         ratio > 0.1)
+survey_results <- survey_results %>% 
+  filter(ratio < 10 & 
+           ratio > 0.1)
 
 survey_results[ , spending_cats][is.na(survey_results[,spending_cats])] <- 0
-
-
 
 ```
 
@@ -71,7 +52,7 @@ survey_results[ , spending_cats][is.na(survey_results[,spending_cats])] <- 0
 
 ### What is your country of employment/future employment? (used for determining currency for following questions)
 
-
+-------------------------------- add percentages to plot
 ```{r, fig.width=10}
 
 survey_country <- survey_results %>% select(country) %>% group_by(country) %>% summarise(count = n())
@@ -109,8 +90,7 @@ ggplot(survey_yes_no) +
 ### Currently average yearly expenses to the following categories 
 
 ```{r}
-
-
+# gathering data
 survey_spendings<- survey_results %>% select(spending_cats) 
 survey_results_spendings <- map_df(survey_spendings, as.numeric)
 survey_results_spendings<- melt(survey_results_spendings)
@@ -122,9 +102,10 @@ colnames(survey_mean_yearly_expenses) <- c('Spending_Type', 'Average_Spending')
 
 ```
 
+
+------------- include confidence interval
+------------- colorbrewer 
 ```{r, fig.width=10}
-
-
 ggplot(survey_mean_yearly_expenses) +
   geom_col(aes(x= reorder(Spending_Type,Average_Spending), y=Average_Spending,fill = survey_mean_yearly_expenses$Spending_Type),width = 0.5) +
     coord_flip() + labs(x = "Choice", y = "Percent" , title = "Yearly expenses") +
@@ -132,48 +113,18 @@ ggplot(survey_mean_yearly_expenses) +
         scale_fill_manual(guide = FALSE,values = c("living_expenses" = "cornflowerblue", "savings" = "firebrick3","vacation" = "black","daily_leisure" ="coral2","consumption_goods"= "blue","sports_hobbies"= "pink","other" ="green"))+
         scale_x_discrete(breaks = c("living_expenses","savings","vacation","daily_leisure","consumption_goods","sports_hobbies","other"),labels=c("Living   Expenses","Savings","Vacation","Daily Leisure","Consumption Goods","Sports Hobbies","Other") ) +
           theme_minimal()
-
-
 ```
 
 
-#### Box-Plot 
-
-
-```{r, fig.width=10, fig.height=6}
-
-survey_results_filt <- survey_results %>% filter(ratio >0.2500000 & ratio < 2)
-
-
-p1<- ggplot(survey_results)+
-  geom_boxplot(aes(x=1, y= ratio), outlier.colour = "red", fill = "salmon") +
-    labs(x="",y="Ratio", title = "With Outliers" )
-
-
-p2<- ggplot(survey_results_filt)+
-  geom_boxplot(aes(x=1, y = ratio), outlier.colour = "red", fill = "salmon")+
-    labs(x="",y="Ratio", title = "With some outliers removed")
-
-plot_grid(p1,p2) 
-
-
-outliers <- boxplot.stats(survey_results$ratio)$out
-dh<- data.frame(outliers)
-dh
-
-```
 
 
 
 ### Distribution of our ratios
 
-
+----------------# show outliers
 ```{r}
-
 ggplot(survey_results,aes(ratio)) +
   geom_histogram(binwidth = .1, col = "black", fill = "cornflowerblue")
-
-
 ```
 
 
@@ -200,7 +151,7 @@ survey_results_spendings <- map_df(survey_results_spendings, as.numeric)
 
 survey_results_spendings<- melt(survey_results_spendings)
 
-
+# spending percentages
 ggplot(survey_results_spendings, aes(x = value, y = variable, height = ..density.., fill = variable ))+
   geom_joy(stat = "density")+
     scale_y_discrete(breaks = c("living_expenses","savings","vacation","daily_leisure","consumption_goods","sports_hobbies","other"),labels=c("Living   Expenses","Savings","Vacation","Daily Leisure","Consumption Goods","Sports Hobbies","Other")) +
@@ -208,5 +159,9 @@ ggplot(survey_results_spendings, aes(x = value, y = variable, height = ..density
 
 ```
 
-> Distributions for the various spending percentages. 
+
+
+
+
+
 

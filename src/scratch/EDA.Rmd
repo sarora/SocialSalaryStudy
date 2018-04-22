@@ -55,7 +55,7 @@ The survey captured the participant's salary in their unique currency. The surve
 # redefine column names
 colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expect', 'no_increase_acceptance', 
                            'living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
-                           'sports_hobbies', 'other', 'id')
+                           'sports_hobbies', 'other')
 
 # spending categories
 spending_cats <- c('living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
@@ -98,27 +98,6 @@ ggplot(data = survey_results, aes(x = country, y = ratio, colour = country, fill
 Our assumption seems to be accurate. There is no country that has a significantly higher or lower ratio distribution.
 
 ```{r}
-log_odds_ratio <- function(data){
-  est <- (log(data[1,1]) + log(data[2,2])) - 
-    (log(data[1,2]) + log(data[2,1]))
-  se <- sqrt(sum(1/data))
-  
-  return(list('est' = est, 'se' = se))
-  
-}
-```
-
-
-```{r}
-for (c in survey_results$country){
-  summary <- survey_results %>% 
-    filter(country == c) %>% 
-    summarise()
-}
-```
-
-
-```{r}
 ggplot(data = survey_results, aes(x = ratio)) + 
   geom_density(colour = 'red', fill = 'red', alpha = 0.2)
 ```
@@ -134,8 +113,9 @@ The first confounder that we believe is of importance, is whether a person prefe
 
 A person who spends a lot on vacation and leisure (which can be either the younger or older generation) may strive for a higher salary, but the possibility exists that they don't - possibly depending whether they value job satisfaction over a salary increase.
 
-
-
+```{r}
+survey_results %>% group_by(no_increase_acceptance) %>% summarise(participants = n())
+```
 
 
 ```{r}
