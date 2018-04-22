@@ -201,9 +201,7 @@ sum.tb
 
 We want to determine whether people who are driven by wealth have different spending habits than people who are not driven by wealth. The nature of the hypotheiss and the data makes a logistic regression model the obvious choice for determining whehter any expense category is significantly different between the two groups.
 
-
-
-## Confounding variables
+Before we start building the model we should consider whether we are dealing with any confounding variables.
 
 Each person who completed the survey had to report their country of residence. Data was collected from a number of different countries. The study's response variable is standardised salary ratio, which does not require taking the person's country into account. However, the country a person live has the potential to play a role in a person's spending habits regardless of their salary ratio. For example, a person from Africa would not necessarily spend a lot on vacations in comparison to a person from North America which may be a result of something like cultural differences.
 
@@ -220,7 +218,7 @@ After removing the observations that do not match our criteria for either a pers
 
 The simplest way of determining whether country has an influence on our model, we should influde a person's country as an explanatory variable and determine whether this variable has any statistical significance. Country is a categorical variable which makes the single observations difficult to work with when trying to determine its effect. A arguably logical solution to the handling of the single observations would be to group the countries by similarities. Seeing that Canada and the United States of America are neighbouring countries it we can group these two countries as `North America`.
 
-South Africa, Nigeria and Botswana hjhave a lot in common in terms of cultural lifestyle, which means that we could group these observations as `Africa`. The other single observations should be omitted for this comparison, because it would require arbitrary assumptions where these data points would fit in.
+South Africa, Nigeria and Botswana have a lot in common in terms of cultural lifestyle, which means that we could group these observations as `Africa`. The other single observations should be omitted for this comparison, because it would require arbitrary assumptions where these data points would fit in.
 
 ```{r}
 survey_results_grouped <- survey_results_grouped %>% mutate(continent = 
@@ -236,69 +234,65 @@ survey_results_grouped <- survey_results_grouped %>% mutate(continent =
 survey_results_continent <- survey_results_grouped %>% filter(!is.na(continent))
 ```
 
-```{r}
-# # testing the effect of continent
-# lm_confound <- lm(ratio ~ (living_expenses + 
-#                   # savings + 
-#                   vacation + 
-#                   daily_leisure + 
-#                   # consumption_goods + 
-#                   sports_hobbies + 
-#                   # other + 
-#                   continent):group
-#                     , 
-#                 data = survey_results_continent)
-# 
-# summary(lm_confound)
-```
-
-```{r}
-# # testing the effect of continent
-# lm_confound_0 <- lm(ratio ~ (living_expenses + 
-#                   # savings + 
-#                   vacation + 
-#                   daily_leisure + 
-#                   # consumption_goods + 
-#                   sports_hobbies + 
-#                   # other + 
-#                   continent)
-#                     , 
-#                 data = survey_results_continent %>% filter(group_bin == 0))
-# 
-# summary(lm_confound_0)
-```
-
-```{r}
-# # testing the effect of continent
-# lm_confound_1 <- lm(ratio ~ (living_expenses + 
-#                   # savings + 
-#                   vacation + 
-#                   daily_leisure + 
-#                   # consumption_goods + 
-#                   sports_hobbies + 
-#                   # other + 
-#                   continent)
-#                     , 
-#                 data = survey_results_continent %>% filter(group_bin == 1))
-# 
-# summary(lm_confound_1)
-```
 
 ```{r}
 # testing the effect of continent
-lm_confound <- glm(group_bin ~ (living_expenses + 
+lm_confound_not <- glm(group_bin ~ living_expenses + 
                   savings + 
                   vacation + 
                   daily_leisure + 
                   consumption_goods + 
                   sports_hobbies + 
-                  other + continent
-                  ), 
+                  other, 
                 data = survey_results_continent, 
                 family = binomial(link = "logit"))
 
+# summary(lm_confound_not)
+
+# testing the effect of continent
+lm_confound <- glm(group_bin ~ living_expenses + 
+                  savings + 
+                  vacation + 
+                  daily_leisure + 
+                  consumption_goods + 
+                  sports_hobbies + 
+                  other + continent, 
+                data = survey_results_continent, 
+                family = binomial(link = "logit"))
+
+# summary(lm_confound)
+
+anova(lm_confound_not, lm_confound, test = "LRT")
+```
+
+
+Our analysis of variance test shows that the continent of a pariticipant does not significantly influence the model. The probability value isn't significant, but it is extremely close to our 0.05 significance threshold. To be safe, it would be better to influde the confounding variable in our model.
+
+```{r}
 summary(lm_confound)
 ```
+
+Consumption goods shows some significance. This indicates that people who are classified as driven by wealth tends to spend more on consumption goods than people who are not driven by wealth according to our data.
+
+```{r}
+ggplot(data = survey_results_continent, aes(x = consumption_goods, group = group, colour = group)) + 
+  geom_density(alpha = 0.2, aes(fill = group), bw = 5)
+```
+
+```{r}
+ggplot(data = survey_results_continent, aes(x = consumption_goods, y = group_bin, group = group, colour = group)) + 
+  geom_jitter(alpha = 0.2, aes(fill = group)) + 
+  geom_violin(scale = "width")
+```
+
+The density plots show a slight difference between the two groups. The amount of data that we have available is fairly limited and makes it difficult to draw accurate conclusions.
+
+
+
+
+
+#### FIN at 4:26 AM
+
 
 
 
