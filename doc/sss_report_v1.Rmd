@@ -1,0 +1,380 @@
+---
+title: "Social Salary Study"
+author: "S. Arora, J. Harmse, V. Mulholland"
+date: "`r format(Sys.time(), '%B %e, %Y')`"
+header-includes:
+- \usepackage{fancyhdr}
+- \pagestyle{fancy}
+- \fancyhead[LE,RO]{Social Salary Study}
+- \fancyfoot[CO,CE]{DSCI 554 - Experimentation and Causal Inference}
+- \fancyfoot[LE,RO]{\thepage}
+output: pdf_document
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warning=F, message=F, echo=FALSE}
+library(tidyverse); theme_set(theme_bw())
+library(cowplot)
+library(ggjoy)
+library(reshape2)
+library(pwr)
+```
+
+
+# Study Overview
+
+> 
+* Clearly state the null hypothesis
+* Include study overview with specific methods used
+* Support terminology used with other papers
+   - Define social standards
+   - Define the relationship behind 
+
+<h4 align="center"> Is a person's social standards correlated with a person's drive for financial wealth? </a></h4>
+
+The null hypothesis is that the people who are driven by financial wealth in their careers and those that are driven by job satisfaction share the same social standards in terms of spending patterns.
+
+>We have subjects from all walks of life and are particularly interested in their attitude towards finances and careers.
+
+>There could be many factors influencing a participants interest in pursuing a salary increase that could be correlated with the time since the last increase in salary for instance. The question was designed to ask whether a user
+
+>Self-reporting is innacurate. The study was designed acknowledging that there could be a certain amount of bias in each person's answers knowing that they may not not have had access to their financial information on hand when responding. Since we are mainly interested in one's relative relatioship between the different monetary values (hence the ratio and the percentages),
+we are making the assumption that one's biased impression of their finances can still  be representive of their beliefs when indicating whether money is the main driver in their career.
+
+>That being said, this study has its limitations and could have been improved namely in the categorization of expense categories. It can be difficult to differentiate between the different types of conspicuous spending, and one could consider that living expenses includes the over-priced rent for instance. We would have had to use a benchmark of the average costs which would have made us much more reliant and the actual monetary values that were input, or if we maintain the path we chose of only being reliant on the perceived attitude toward one's finances, we would have had to be more explicit in how we differentiate frivolous spending over basic needs.
+
+
+>The goal of this study is to determine whether a person's social standards are correlated with a person's expected salary. The idea behind the hypothesis is that people who have higher social standards expect a higher salary. The opposite can also be argued - does a person's expected salary determine a person's social standards? This study does not aim to determine which variables are explanatory or a response, but rather to determine whether a strong correlation exists between social standards and expected salary. We found it reasonable to assume that a person who is driven by money would expect to earn more than the average person who has the same skillset and experience.
+
+
+Considering that participants identified several different country job locations, it was determined that a possible confounder could be the cultural attitude towards spending. Since our respondents were mostly from North America, we categorized the country as either North American or not to get somewhat of an even split. 
+
+<INSERT BLURB ABOUT WHAT WE DECIDE TO CONCLUDE IN TERMS OF WHAT'S CONSPICUOUS SPENDING>
+
+
+
+
+
+# Methodology
+
+The test statistic will be attempting to identify if there is a strong correlation between social standards and a person's salary expectations. A positive correlation would be expected between the continuous numerical measurement of social standards and the normalized continuous expected salary range. Social standards and expected salaries are expected to both form t-distributions given the survey responses. A linear regression model seems to be an appropriate choice for the study, since our response variable (expected salary) is a continuous range and the explanatory variables related to social standards are expected to have a linear relationship with expected salary.
+
+
+
+
+## survey study design
+
+The questions in the Appendix under [Survey Questions](#surveyq) and are conceptualized from two topics, one pertaining to the salary motivations and the latter is a measure of a participants social standards. This is admittedly a difficult concept to measure, thus our focus is mainly to delineated the difference between essential expenditure versus lifestyle enhacement spendings. 
+
+Certain safety checks are put in place to prevent users from entering invalid data. For instance, the spending categories have to add up to 100% of their expenditure
+
+
+
+## data collection methods
+
+The following table summarises the key fields populated by the [survey](#surveyq) data and the calculated value, `ratio`, namely the response variable as a ratio of the two salary values.
+
+|  Features       | Description                                                                |
+|--------------------------|----------------------------------------------------------------------------|
+| `salary_base`            | An indicator meant to be a subjective baseline of what salary a <br> person of their expertise would earn.      |
+| `salary_expect`          | The expected salary combined with the base salary provides a relative <br> indicator to the respondents pursuit of monetary gains. |
+| `no_increase_acceptance` | A binary metric used to flag those that are more driven by money than others.  |
+| `ratio`                  | $\frac{Salary_{expect} - Salary_{base}}{Salary_{base}}$ allows us to differentiate those who <br>have a desire for a high increase in salary vs those that are satisfied with a modest amount.   |
+| `living_expenses`        | Living Expenses (utilities, rent, mortgage, transportation, property taxes if owner, etc.)                                  |
+| `savings`                | Savings (retirement, investments, emergency funds, etc.)                                  |
+| `vacation`               | Vacation (lodging, transportation, day trips, etc.)                                  |
+| `daily_leisure`          | Daily Leisure (eating out, books, movies, self-care, etc.)                                  |
+| `consumption_goods`      | Consumption Goods (clothing, electronics, other luxury items, etc.)                                  |
+| `sports_hobbies`         | Personal Sports and Hobbies (sporting goods and services, gym, arts and crafts, etc.)                                  |
+| `other`                  | Other (health care, taxes, dependent expenses, etc.)                                  |
+
+The data is anonymized before being made visible and then uploaded as a processed [dataset](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/vmulholl/data/processed/surveydata_clean.rds). Several wrangling steps are performed to process and wrangle the data into a usable format.
+
+# Analysis
+
+## methodology
+
+Our analysis wants to compare the two defined groups (participants who are driven by wealth and those who are not) in terms of spending habits.
+
+|  Variable Type       | Variable Name                                                                |
+|--------------------------|----------------------------------------------------------------------------|
+| `response`            | `Participant Group` |
+| `explanatory`          | `living_expenses` |
+| `explanatory`          | `savings` |
+| `explanatory`          | `vacation` |
+| `explanatory`          | `daily_leisure` |
+| `explanatory`          | `consumption_goods` |
+| `explanatory`          | `sports_hobbies` |
+| `explanatory`          | `other` |
+
+Given the nature of our model variables, a logistic regression model would be the the most appropriate model choice - all the explanatory variables are continuous, whereas the response variable is a binary outcome.
+
+Before excepting that this model is sufficient, it should be considered whether we are dealing with any confounding variables.
+
+Each person who completed the survey had to report their country of employment. Data was collected from a number of different countries. The country a person works in has the potential to influence a person's spending behaviours regardless of their response group. For example, people from different countries may not spend the same amount on vacation, as found by [MoveHub](https://www.movehub.com/blog/worlds-biggest-travellers/).
+
+We need to consider whether country has any significant effect our model. The Appendix [visualization](#edacontinent) shows a number of single observations for different countries, and a larger number of observations from Canada, South Africa and the US. A arguably logical solution to the handling of single country observations would be to group the countries by similarities. Seeing that Canada and the United States of America are neighbouring countries it we can group these two countries as `North America`.
+
+South Africa, Nigeria and Botswana have a lot in common in terms of lifestyle, which means that we could group these observations as `Africa`. The other single observations should be omitted for this comparison, because it would require arbitrary assumptions for classifying these observations.
+
+## results
+
+```{r eval=FALSE, echo=FALSE}
+# ANONYMIZATION ---------------------------------------------------------------
+# removing confidential data
+survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv', skip = 1)
+survey_results <- survey_results[, 10:ncol(survey_results)]
+
+#import data
+# survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv') # local path - remove identifiers beforehand
+
+# redefine column names
+colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expect', 'no_increase_acceptance', 
+                           'living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
+                           'sports_hobbies', 'other')
+
+# spending categories
+spending_cats <- c('living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
+                           'sports_hobbies', 'other')
+
+# remove no consent
+survey_results <- survey_results %>% filter(consent %in% c('Yes'))
+
+# add observation id
+survey_results$id <- 1:nrow(survey_results)
+
+# save raw clean data
+saveRDS(survey_results, file = '../data/processed/surveydata_clean.rds')
+
+# remove all traces
+rm(survey_results)
+```
+
+```{r echo=FALSE}
+# DATA CLEANING AND WRANGLING -------------------------------------------------
+# import clean data
+survey_results <-  readRDS(file = '../data/processed/surveydata_clean.rds') 
+
+# redefine column names
+colnames(survey_results) <- c('consent', 
+                              'country', 
+                              'salary_base', 
+                              'salary_expect', 
+                              'no_increase_acceptance',
+                              'living_expenses', 
+                              'savings', 
+                              'vacation', 
+                              'daily_leisure', 
+                              'consumption_goods',
+                              'sports_hobbies', 
+                              'other', 
+                              'id')
+
+# determine spending categories
+spending_cats <- c('living_expenses', 
+                   'savings', 
+                   'vacation', 
+                   'daily_leisure', 
+                   'consumption_goods',
+                   'sports_hobbies', 
+                   'other')
+
+# ensure any NA spending values are set to 0
+survey_results[ , spending_cats][is.na(survey_results[,spending_cats])] <- 0
+
+# converting char to numeric
+survey_results$salary_base <- as.numeric(as.character(survey_results$salary_base))
+survey_results$salary_expect <- as.numeric(as.character(survey_results$salary_expect))
+
+
+# add salary ratio 
+survey_results <- survey_results %>% mutate(ratio = (salary_expect - salary_base)/salary_base)
+
+
+## backup dataset with all outliers
+survey_results_all_outliers <- survey_results
+
+# remove outliers
+survey_results <- survey_results %>% 
+  filter(!ratio %in% boxplot.stats(survey_results$ratio)$out)
+
+# grouping participants by wealth or not wealth criteria
+survey_results <- survey_results %>% 
+  mutate(group = ifelse(no_increase_acceptance == "No" & ratio > median(ratio),"wealth", 
+                        ifelse(no_increase_acceptance == "Yes" & ratio <= median(ratio),"not_wealth", 
+                               "other")), 
+         group_bin = ifelse(group == "wealth", 1, 
+                            ifelse(group == "not_wealth", 0, NA)))
+
+# filter out participants who do not satisfy grouping criteria
+survey_results_grouped <- survey_results %>% filter(!group %in% c("other"))
+
+# group countries (confounder) by continent
+survey_results_grouped <- survey_results_grouped %>% 
+  mutate(continent = ifelse(country %in% c("United States of America (USA)", 
+                                           "Canada"), 
+                            'North America', 
+                            ifelse(country %in% c("Botswana", 
+                                                  "Nigeria", 
+                                                  "South Africa"), 
+                                   'Africa', 
+                                   NA)))
+
+# filter out participants who do not fall into continent groups
+survey_results_continent <- survey_results_grouped %>% 
+  filter(!is.na(continent))
+
+# glm excluding continent (confounder)
+glm_no_confounding <- glm(group_bin ~ 
+                         living_expenses + 
+                          savings + 
+                          vacation + 
+                          daily_leisure + 
+                          consumption_goods + 
+                          sports_hobbies + 
+                          other, 
+                        data = survey_results_continent, 
+                        family = binomial(link = "logit"))
+
+# glm including continent (confounder)
+glm_confounding <- glm(group_bin ~ 
+                            living_expenses + 
+                            savings + 
+                            vacation + 
+                            daily_leisure + 
+                            consumption_goods + 
+                            sports_hobbies + 
+                            other + continent, 
+                          data = survey_results_continent, 
+                          family = binomial(link = "logit"))
+
+# anova test
+anova_confounding <- anova(glm_no_confounding, glm_confounding, test = "LRT")
+```
+
+In the Appendix [Continent section](#edacontinent) two logistic regression models are compared to determine the effect of the potential confounding variable. 
+
+The Anova test results indicates a p-value of $0.05046$. Since this value is on the verge of being below a significance level of $0.05$ the `continent` variable (aggregation of the `country` variable) should be included in the model as a variable that potentially has a significant influence.
+
+Below follows the results of the logistic regression model which includes the confounding variable as an explanatory variable.
+
+```{r, echo=FALSE}
+summary(glm_confounding)$coefficients %>% broom::tidy() %>% knitr::kable()
+```
+
+Consumption goods shows some significance. This indicates that people who are classified as driven by wealth may tend to spend more on consumption goods than people who are not driven by wealth.
+
+```{r}
+ggplot(data = survey_results_continent, aes(x = consumption_goods, group = group, colour = group)) + 
+  geom_density(alpha = 0.2, aes(fill = group), bw = 5)
+```
+
+However, the model includes multiple comparisons. The p-values need to be adjusted in order to account for random significance.
+
+```{r, echo = FALSE}
+coeffs <- summary(glm_confounding)$coefficients %>% broom::tidy()
+coeffs <- coeffs[2:nrow(coeffs), ncol(coeffs)]
+
+adjusted_p_values_fdr<- p.adjust(coeffs, method = "fdr")
+adjusted_p_values_bonf <- p.adjust(coeffs,method = "bonf")
+
+df_survey_values<- cbind(coeffs,adjusted_p_values_bonf)
+df_survey_values <- cbind(df_survey_values,adjusted_p_values_fdr)
+
+df_survey_values <- as.tibble(df_survey_values) %>% select(coeffs,adjusted_p_values_fdr,adjusted_p_values_bonf)
+
+colnames(df_survey_values) <- c('P_original', 'P_adjust(FDR)', 'P_adjust(Bonf)')
+
+knitr::kable(df_survey_values)
+
+```
+
+Adjusting the p-value removes all significance from the model. The lack of significance can be attributed to the lack of more data. If more data was collected, the study would have had the potential to gain more power.
+
+# Discussion
+
+## Study Design
+> what did you do well to make this study as causal as possible?
+
+The questions were constructed to account for all types of spending so that the respondent could better consider their periodic spending distribution. There are many subjective and psychological features that would contribute to someone's self-assessment of expected and base salary estimates which was accounted for when stating that we are looking at a person's drive for money. It could be 
+
+> what was not done well and how did that effect your studies conclusions?
+
+Clarifying the spending categories is a shortcoming of our study. There is a tradeoff between making our survey straightforward and being too transparent about the agenda behind the analysis with very specific questions. There is some ambiguity behind the concept of social standards which we tried to account for in the vacation, hobbies, and daily leisure categories, but acknowledge that one could be partaking in conspicuous consumption while categorizing it as a living expense, such as paying a very high rent to live in the nicest neighbourhood. The "Other" category could also be misleading because there could be some frivolous expenses that are not accounted for. 
+
+Self-assessments aren't ideal since the participant is require to think objectively on the spot about their finances. This could inject a considerable source of bias, and would have required a more thorough assessment method than a survey. Providing and export of a bank categorization of one's spendings would be a better method for a true representation. 
+
+
+On the other hand, there are also a lot of psychological fe
+
+> what would you do differently next time to improve your survey/study design and why?
+
+It was good to use the point system to divide the spending because it forced the participant to consider each category of interest and then associate the rest with "other". A limitation of our design was that the 
+
+## Results Discussion
+
+
+# Conclusion
+
+
+
+
+
+\pagebreak
+
+# Appendix
+
+## Survey Questions {#surveyq}
+
+1. What is your country of employment/future employment? (used for determining currency for following questions)
+
+2. Assuming the country's currency specified above, what should someone with your qualifications and experience expect to receive as an annual salary?
+
+3. Assuming the country's currency specified above, what is the annual salary that you aim to receive 1 year from now?
+
+4. Assuming high job satisfaction, would you keep a job that does not give you a salary increase over the next two years?
+
+5. Please assign an approximate percentage of your current yearly expenses to the following categories (must sum up to 100).
+    * Living Expenses (utilities, rent, mortgage, transportation, property taxes if owner, etc.)
+    * Savings (retirement, investments, emergency funds, etc.)
+    * Vacation (lodging, transportation, day trips, etc.)
+    * Daily Leisure (eating out, books, movies, self-care, etc.)
+    * Consumption Goods (clothing, electronics, other luxury items, etc.)
+    * Personal Sports and Hobbies (sporting goods and services, gym, arts and crafts, etc.)
+    * Other (health care, taxes, dependent expenses, etc.)
+    
+## EDA
+
+### Confounding Variables
+
+#### Continents {#edacontinent}
+
+We want to determine whether people who are driven by wealth have different spending habits than people who are not driven by wealth. The nature of the hypotheiss and the data makes a logistic regression model the obvious choice for determining whehter any expense category is significantly different between the two groups.
+
+Before we start building the model we should consider whether we are dealing with any confounding variables.
+
+Each person who completed the survey had to report their country of residence. Data was collected from a number of different countries. The study's response variable is standardised salary ratio, which does not require taking the person's country into account. However, the country a person live has the potential to play a role in a person's spending habits regardless of their salary ratio. For example, a person from Africa would not necessarily spend a lot on vacations in comparison to a person from North America which may be a result of something like cultural differences.
+
+We need to consider whether country has any significant effect on either out explanatory expense variables or our response variable.
+
+```{r echo=FALSE}
+ggplot(data = survey_results_grouped, aes(x = country, y = ratio, colour = country, fill = country)) + 
+  geom_jitter() + 
+   geom_violin(alpha = 0.2) +
+    theme(axis.text.x = element_text(angle = 25, hjust = 0.7, vjust = 0.8), legend.position = "none")
+```
+
+After removing the observations that do not match our criteria for either a person who is driven by wealth or not driven by wealth, we are left with a relatively small number of observations. The visualization above shows a number of single observations for different countries, but quite a few observations from Canada, South Africa and the US.
+
+The simplest way of determining whether country has an influence on our model, we should influde a person's country as an explanatory variable and determine whether this variable has any statistical significance. Country is a categorical variable which makes the single observations difficult to work with when trying to determine its effect. A arguably logical solution to the handling of the single observations would be to group the countries by similarities. Seeing that Canada and the United States of America are neighbouring countries it we can group these two countries as `North America`.
+
+South Africa, Nigeria and Botswana have a lot in common in terms of cultural lifestyle, which means that we could group these observations as `Africa`. The other single observations should be omitted for this comparison, because it would require arbitrary assumptions where these data points would fit in.
+
+```{r echo=FALSE}
+anova_confounding %>% broom::tidy() %>% knitr::kable()
+```
+
