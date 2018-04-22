@@ -59,7 +59,7 @@ The following table summarises the key fields populated by the [survey](#surveyq
 |--------------------------|----------------------------------------------------------------------------|
 | `salary_base`            | An indicator meant to be a subjective baseline of what salary a <br> person of their expertise would earn.      |
 | `salary_expect`          | The expected salary combined with the base salary provides a relative <br> indicator to the respondent's pursuit of monetary gains. |
-| `no_increase_acceptance` | A binary metric used to flag those that are more driven by money than others.  |
+| `no_increase_acceptance` | A binary metric indicating whether a person prefers high job satisfaction of a salary increase.  |
 | `ratio`                  | $\frac{Salary_{expect} - Salary_{base}}{Salary_{base}}$ allows us to differentiate those who <br>have a desire for a high increase in salary vs those that are satisfied with a modest amount.   |
 | `living_expenses`        | Living Expenses (utilities, rent, mortgage, transportation, property taxes if owner, etc.) percentage of spending |
 | `savings`                | Savings (retirement, investments, emergency funds, etc.) percentage of spending |
@@ -69,7 +69,11 @@ The following table summarises the key fields populated by the [survey](#surveyq
 | `sports_hobbies`         | Personal Sports and Hobbies (sporting goods and services, gym, arts and crafts, etc.) percentage of spending |
 | `other`                  | Other (health care, taxes, dependent expenses, etc.) percentage of spending |
 
-The data is anonymized before being made visible and then uploaded as a processed [dataset](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/vmulholl/data/processed/surveydata_clean.rds). Several pre-processing steps are performed to clean and wrangle the data into a usable format. Our response variable underwent a transformation to better differentiate the participants of interest since we cannot assume that a person with a high salary ratio is primarily driven by wealth as they may have specified that job satisfaction is a bigger driver than salary increase and vice-versa. Those that do not fall into either these two groups are considered to have answered ambiguously (expects a high salary increase, but is content with job satisfaction or the opposite) and cannot be considered for our study. 
+The data is anonymized before being made visible and then uploaded as a processed [dataset](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/vmulholl/data/processed/surveydata_clean.rds).
+
+Several pre-processing steps are performed to clean and wrangle the data into a usable format. Pre-processing included removing salary ratio outliers that may have been caused by incorrect data entries. It was decided to remove the values beyond ~95% confidence level. The box-plot method performs a more sophisticated outlier selection than the alternative, the quantile approach, that is more rigid in the 95% threshold. Since we have less observations than ideal, it seemed more appropriate.
+
+Our response variable underwent a transformation to better differentiate the participants of interest since we cannot assume that a person with a high salary ratio is primarily driven by wealth as they may have specified that job satisfaction is a bigger driver than salary increase and vice-versa. Those that do not fall into either these two groups are considered to have answered ambiguously (expects a high salary increase, but is content with job satisfaction or the opposite) and cannot be considered for our study. 
 
 \[
 \begin{cases}
