@@ -405,13 +405,21 @@ survey_results_nomiss <- survey_results %>%
   select(ratio, no_increase_acceptance, one_of(cov)) %>%
   na.omit() %>% mutate(no_increase=if_else(no_increase_acceptance == "Yes", 1, 0))
 library(MatchIt)
-mod_match <- matchit(no_increase ~ living_expenses + savings + vacation + daily_leisure + consumption_goods + sports_hobbies + other, ratio=1 ,
+mod_match <- matchit(no_increase ~ living_expenses + savings + vacation + daily_leisure + consumption_goods + sports_hobbies + other, ratio=1,
                      method = "nearest", data = survey_results_nomiss)
 
 summary(mod_match)
 
 
+# trying with ratio of 5 control cases to one treatment
+mod_match <- matchit(no_increase ~ living_expenses + savings + vacation + daily_leisure + consumption_goods + sports_hobbies + other, ratio=5,
+                     method = "nearest", data = survey_results_nomiss)
 
+summary(mod_match)
+
+
+plot(mod_match, type = "jitter")
+plot(mod_match, type = "hist")
 ```
 
 ```{r}
@@ -445,6 +453,127 @@ grid.arrange(
 )
 ```
 
+Our grouping variable is `no_increase_acceptance` and our matching variables are all the spending categories (`living_expenses`, `savings`, `vacation`, `daily_leisure`, `consumption_goods`, `sports_hobbies`, `other`) where we aim to equalize the groups on. 
+
+```{r}
+# trying with ratio of 5 control cases to one treatment
+mod_match <- matchit(no_increase ~ living_expenses + savings + vacation + daily_leisure + consumption_goods + sports_hobbies + other,
+                     method = "subclass", data = survey_results_nomiss)
+
+summary(mod_match)
+
+
+plot(mod_match, type = "jitter")
+plot(mod_match, type = "hist")
+
+dta_m <- match.data(mod_match)
+dim(dta_m)
+
+fn_bal <- function(dta, variable) {
+  dta$variable <- dta[, variable]
+  # if (variable == 'w3income') dta$variable <- dta$variable / 10^3
+  # dta$catholic <- as.factor(dta$catholic)
+  support <- c(min(dta$variable), max(dta$variable))
+  ggplot(dta, aes(x = distance, y = variable, color = no_increase_acceptance)) +
+    geom_point(alpha = 0.2, size = 1.3) +
+    geom_smooth(method = "loess", se = F) +
+    xlab("Propensity score") +
+    ylab(variable) +
+    theme_bw() +
+    ylim(support)
+}
+
+library(gridExtra)
+grid.arrange(
+   fn_bal(dta_m, "living_expenses"),
+   fn_bal(dta_m, "savings") + theme(legend.position = "none"),
+   fn_bal(dta_m, "vacation"),
+   fn_bal(dta_m, "daily_leisure") + theme(legend.position = "none"),
+   fn_bal(dta_m, "consumption_goods"),
+   nrow = 3, widths = c(1, 0.8)
+)
+```
 
 
 
+```{r}
+# trying with ratio of 5 control cases to one treatment
+mod_match <- matchit(no_increase ~ living_expenses + savings + vacation + daily_leisure + consumption_goods + sports_hobbies + other,
+                     method = "cem", data = survey_results_nomiss)
+
+summary(mod_match)
+
+
+plot(mod_match, type = "jitter")
+plot(mod_match, type = "hist")
+
+dta_m <- match.data(mod_match)
+dim(dta_m)
+
+fn_bal <- function(dta, variable) {
+  dta$variable <- dta[, variable]
+  # if (variable == 'w3income') dta$variable <- dta$variable / 10^3
+  # dta$catholic <- as.factor(dta$catholic)
+  support <- c(min(dta$variable), max(dta$variable))
+  ggplot(dta, aes(x = distance, y = variable, color = no_increase_acceptance)) +
+    geom_point(alpha = 0.2, size = 1.3) +
+    geom_smooth(method = "loess", se = F) +
+    xlab("Propensity score") +
+    ylab(variable) +
+    theme_bw() +
+    ylim(support)
+}
+
+library(gridExtra)
+grid.arrange(
+   fn_bal(dta_m, "living_expenses"),
+   fn_bal(dta_m, "savings") + theme(legend.position = "none"),
+   fn_bal(dta_m, "vacation"),
+   fn_bal(dta_m, "daily_leisure") + theme(legend.position = "none"),
+   fn_bal(dta_m, "consumption_goods"),
+   nrow = 3, widths = c(1, 0.8)
+)
+```
+
+```{r}
+
+# trying with ratio of 5 control cases to one treatment
+mod_match <- matchit(no_increase ~ living_expenses + savings + vacation + daily_leisure + consumption_goods + sports_hobbies + other,
+                     method = "subclass", data = survey_results_nomiss)
+
+summary(mod_match)
+
+
+plot(mod_match, type = "jitter")
+plot(mod_match, type = "hist")
+
+dta_m <- match.data(mod_match)
+dim(dta_m)
+
+fn_bal <- function(dta, variable) {
+  dta$variable <- dta[, variable]
+  # if (variable == 'w3income') dta$variable <- dta$variable / 10^3
+  # dta$catholic <- as.factor(dta$catholic)
+  support <- c(min(dta$variable), max(dta$variable))
+  ggplot(dta, aes(x = distance, y = variable, color = no_increase_acceptance)) +
+    geom_point(alpha = 0.2, size = 1.3) +
+    geom_smooth(method = "loess", se = F) +
+    xlab("Propensity score") +
+    ylab(variable) +
+    theme_bw() +
+    ylim(support)
+}
+
+library(gridExtra)
+grid.arrange(
+   fn_bal(dta_m, "living_expenses"),
+   fn_bal(dta_m, "savings") + theme(legend.position = "none"),
+   fn_bal(dta_m, "vacation"),
+   fn_bal(dta_m, "daily_leisure") + theme(legend.position = "none"),
+   fn_bal(dta_m, "consumption_goods"),
+   nrow = 3, widths = c(1, 0.8)
+)
+```
+
+
+               

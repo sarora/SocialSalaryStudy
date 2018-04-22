@@ -12,61 +12,183 @@ output: pdf_document
 urlcolor: blue
 ---
 
-# question
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-<h4 align="center"> Is a person's social standards correlated with a person's expected salary? </a></h4>
+```{r, warning=F, message=F, echo=FALSE}
+library(tidyverse); theme_set(theme_bw())
+library(cowplot)
+library(ggjoy)
+library(reshape2)
+library(pwr)
+library(MatchIt)
+```
 
-> Define social standards
-> Define the relationship behind 
 
-The goal of this study is to determine whether a person's social standards are correlated with a person's expected salary. The idea behind the hypothesis is that people who have higher social standards expect a higher salary. The opposite can also be argued - does a person's expected salary determine a person's social standards? This study does not aim to determine which variables are explanatory or a response, but rather to determine whether a strong correlation exists between social standards and expected salary. We found it reasonable to assume that a person who is driven by money would expect to earn more than the average person who has the same skillset and experience.
+# Study Overview
 
-# methods
+> 
+* Clearly state the null hypothesis
+* Include study overview with specific methods used
+* Support terminology used with other papers
+   - Define social standards
+   - Define the relationship behind 
+
+<h4 align="center"> Is a person's social standards correlated with a person's drive for financial wealth? </a></h4>
+
+The null hypothesis is that the people who are driven by financial wealth in their careers and those that are driven by job satisfaction share the same social standards in terms of spending patterns.
+
+>The goal of this study is to determine whether a person's social standards are correlated with a person's expected salary. The idea behind the hypothesis is that people who have higher social standards expect a higher salary. The opposite can also be argued - does a person's expected salary determine a person's social standards? This study does not aim to determine which variables are explanatory or a response, but rather to determine whether a strong correlation exists between social standards and expected salary. We found it reasonable to assume that a person who is driven by money would expect to earn more than the average person who has the same skillset and experience.
+
+
+Considering that participants identified several different country job locations, it was determined that a possible confounder could be the cultural attitude towards spending. Since our respondents were mostly from North America, we categorized the country as either North American or not to get somewhat of an even split. 
+
+<INSERT BLURB ABOUT WHAT WE DECIDE TO CONCLUDE IN TERMS OF WHAT'S CONSPICUOUS SPENDING>
+
+
+
+
+
+# Methodology
 
 The test statistic will be attempting to identify if there is a strong correlation between social standards and a person's salary expectations. A positive correlation would be expected between the continuous numerical measurement of social standards and the normalized continuous expected salary range. Social standards and expected salaries are expected to both form t-distributions given the survey responses. A linear regression model seems to be an appropriate choice for the study, since our response variable (expected salary) is a continuous range and the explanatory variables related to social standards are expected to have a linear relationship with expected salary.
 
+
+
+
 ## survey study design
 
-The survey questions are divided into two groups, one pertaining to the salary motivations and the latter is a measure of a participants social standards. This is admittedly a diffult concept to measure, thus our focussed is mainly to delineated the difference between essential expenditure versus lifestyle enhacement spendings. 
+The questions in the Appendix under [Survey Questions](#surveyq) and are conceptualized from two topics, one pertaining to the salary motivations and the latter is a measure of a participants social standards. This is admittedly a difficult concept to measure, thus our focus is mainly to delineated the difference between essential expenditure versus lifestyle enhacement spendings. 
 
 Certain safety checks are put in place to prevent users from entering invalid data. For instance, the spending categories have to add up to 100% of their expenditure
 
-> What is your country of employment/future employment? (used for determining currency for following questions)
-> Assuming the country's currency specified above, what should someone with your qualifications and experience expect to receive as an annual salary?
-> Assuming the country's currency specified above, what is the annual salary that you aim to receive 1 year from now?
-> Assuming high job satisfaction, would you keep a job that does not give you a salary increase over the next two years?
-> Please assign an approximate percentage of your current yearly expenses to the following categories (must sum up to 100).
-  * Living Expenses (utilities, rent, mortgage, transportation, property taxes if owner, etc.)
-  * Savings (retirement, investments, emergency funds, etc.)
-  * Vacation (lodging, transportation, day trips, etc.)
-  * Daily Leisure (eating out, books, movies, self-care, etc.)
-  * Consumption Goods (clothing, electronics, other luxury items, etc.)
-  * Personal Sports and Hobbies (sporting goods and services, gym, arts and crafts, etc.)
-  * Other (health care, taxes, dependent expenses, etc.)
+
 
 ## data collection methods
+
+The following table summarises the key fields populated by the [survey](#surveyq) and the calculated values, namelu the response variable as a ratio of the two salary values.
+
+| Dependent Features       | Description                                                                |
+|--------------------------|----------------------------------------------------------------------------|
+| `salary_base`            | An indicator meant to be a subjective baseline of what salary a <br> person of their expertise would earn.      |
+| `salary_expect`          | The expected salary combined with the base salary provides a relative <br> indicator to the respondents pursuit of monetary gains. |
+| `no_increase_acceptance` | A binary metric serves as a safety check against false positives, that is respondents <br> that may have over-exagerated  their expected salary skewing <br> the impression of interest in monetary gain while in reality being content with their current situation.  |
+| `ratio`                  | This is a calculated metric that simplifies handling respondent's country selection.                                  |
+| `living_expenses`                  | Living Expenses (utilities, rent, mortgage, transportation, property taxes if owner, etc.)                                  |
+| `savings`                  | Savings (retirement, investments, emergency funds, etc.)                                  |
+| `vacation`                  | Vacation (lodging, transportation, day trips, etc.)                                  |
+| `daily_leisure`                  | Daily Leisure (eating out, books, movies, self-care, etc.)                                  |
+| `consumption_goods`                  | Consumption Goods (clothing, electronics, other luxury items, etc.)                                  |
+| `sports_hobbies`                  | Personal Sports and Hobbies (sporting goods and services, gym, arts and crafts, etc.)                                  |
+| `other`                  | Other (health care, taxes, dependent expenses, etc.)                                  |
+
+
 
 ## analysis methods
 
 # results and analysis
 
+```{r eval=FALSE, echo=FALSE}
+# ANONYMIZATION ---------------------------------------------------------------
+# removing confidential data
+survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv', skip = 1)
+survey_results <- survey_results[, 10:ncol(survey_results)]
+
+#import data
+# survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv') # local path - remove identifiers beforehand
+
+# redefine column names
+colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expect', 'no_increase_acceptance', 
+                           'living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
+                           'sports_hobbies', 'other')
+
+# spending categories
+spending_cats <- c('living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
+                           'sports_hobbies', 'other')
+
+# remove no consent
+survey_results <- survey_results %>% filter(consent %in% c('Yes'))
+
+# add observation id
+survey_results$id <- 1:nrow(survey_results)
+
+# save raw clean data
+saveRDS(survey_results, file = '../data/processed/surveydata_clean.rds')
+
+# remove all traces
+rm(survey_results)
+```
+
+```{r echo=FALSE}
+# DATA CLEAN ------------------------------------------------------------------
+# import clean data
+survey_results <-  readRDS(file = '../data/processed/surveydata_clean.rds')  # local path - remove identifiers beforehand
+
+# redefine column names
+colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expect', 'no_increase_acceptance',
+                              'living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods',
+                              'sports_hobbies', 'other', 'id')
+
+# determine spending categories
+spending_cats <- c('living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods',
+                   'sports_hobbies', 'other')
+
+# WRANGLING -------------------------------------------------------------------
+
+
+```
+
+
 # Discussion
 
+## Study Design
 > what did you do well to make this study as causal as possible?
+
+The questions were constructed to account for all types of spending so that the respondent could better consider their periodic spending distribution. There are many subjective and psychological features that would contribute to someone's self-assessment of expected and base salary estimates which was accounted for when stating that we are looking at a person's drive for money. It could be 
+
 > what was not done well and how did that effect your studies conclusions?
 
 Clarifying the spending categories is a shortcoming of our study. There is a tradeoff between making our survey straightforward and being too transparent about the agenda behind the analysis with very specific questions. There is some ambiguity behind the concept of social standards which we tried to account for in the vacation, hobbies, and daily leisure categories, but acknowledge that one could be partaking in conspicuous consumption while categorizing it as a living expense, such as paying a very high rent to live in the nicest neighbourhood. The "Other" category could also be misleading because there could be some frivolous expenses that are not accounted for. 
 
+Self-assessments aren't ideal since the participant is require to think objectively on the spot about their finances. This could inject a considerable source of bias, and would have required a more thorough assessment method than a survey. Providing and export of a bank categorization of one's spendings would be a better method for a true representation. 
+
+
+On the other hand, there are also a lot of psychological fe
+
 > what would you do differently next time to improve your survey/study design and why?
 
-It was good to use the point system to divide the spending beca
+It was good to use the point system to divide the spending because it forced the participant to consider each category of interest and then associate the rest with "other". A limitation of our design was that the 
 
-## discussion of the results
+## Results Discussion
 
-## discussion of your survey/study design
+
 
 # Conclusion
 
+
+
+
+
+\pagebreak
+
 # Appendix
 
+## Survey Questions {#surveyq}
 
+1. What is your country of employment/future employment? (used for determining currency for following questions)
+
+2. Assuming the country's currency specified above, what should someone with your qualifications and experience expect to receive as an annual salary?
+
+3. Assuming the country's currency specified above, what is the annual salary that you aim to receive 1 year from now?
+
+4. Assuming high job satisfaction, would you keep a job that does not give you a salary increase over the next two years?
+
+5. Please assign an approximate percentage of your current yearly expenses to the following categories (must sum up to 100).
+    * Living Expenses (utilities, rent, mortgage, transportation, property taxes if owner, etc.)
+    * Savings (retirement, investments, emergency funds, etc.)
+    * Vacation (lodging, transportation, day trips, etc.)
+    * Daily Leisure (eating out, books, movies, self-care, etc.)
+    * Consumption Goods (clothing, electronics, other luxury items, etc.)
+    * Personal Sports and Hobbies (sporting goods and services, gym, arts and crafts, etc.)
+    * Other (health care, taxes, dependent expenses, etc.)
