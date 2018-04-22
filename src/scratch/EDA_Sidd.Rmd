@@ -143,13 +143,13 @@ Group A is people who
 
 ```{r}
 ##
-survey_results <- survey_results %>% mutate(group = ifelse(no_increase_acceptance == "No" & ratio > median(ratio),"A",ifelse(no_increase_acceptance == "Yes" & ratio <= median(ratio),"B", "M")))
+survey_results <- survey_results %>% mutate(group = ifelse(no_increase_acceptance == "No" & ratio > median(ratio),"wealth",ifelse(no_increase_acceptance == "Yes" & ratio <= median(ratio),"not_wealth", "other")))
 
 ## group A are people who would not keep a job if not given a salary increase.
-survery_results_A <- survey_results %>% filter(group == "A" )
+survery_results_A <- survey_results %>% filter(group == "wealth" )
 
 ## group B are people who keep a job (assuming satisfaction) regardless of a salary increase.  
-survery_results_B <- survey_results %>% filter(group == "B" )
+survery_results_B <- survey_results %>% filter(group == "not_wealth" )
 
 ```
 
