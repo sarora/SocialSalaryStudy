@@ -229,8 +229,8 @@ survey_results_grouped <- survey_results_grouped %>%
 survey_results_continent <- survey_results_grouped %>% 
   filter(!is.na(continent))
 
-# glm including continent (confounder)
-glm_confounding <- glm(group_bin ~ 
+# glm excluding continent (confounder)
+glm_no_confounding <- glm(group_bin ~ 
                          living_expenses + 
                           savings + 
                           vacation + 
@@ -241,8 +241,8 @@ glm_confounding <- glm(group_bin ~
                         data = survey_results_continent, 
                         family = binomial(link = "logit"))
 
-# glm excluding continent (confounder)
-glm_no_confounding <- glm(group_bin ~ 
+# glm including continent (confounder)
+glm_confounding <- glm(group_bin ~ 
                             living_expenses + 
                             savings + 
                             vacation + 
@@ -252,14 +252,49 @@ glm_no_confounding <- glm(group_bin ~
                             other + continent, 
                           data = survey_results_continent, 
                           family = binomial(link = "logit"))
+
+# anova test
+anova_confounding <- anova(glm_no_confounding, glm_confounding, test = "LRT")
 ```
 
 In the Appendix [Continent section](#edacontinent) two logistic regression models are compared to determine the effect of the potential confounding variable. 
 
-The Anova test results indicates a p-value of $0.05046$. Since this value is on the verge of being below a significance level of $0.05$ the `continent` variable (aggregation of the `country` variable) should be included in the model as a variable that potentially has a significant influence. 
+The Anova test results indicates a p-value of $0.05046$. Since this value is on the verge of being below a significance level of $0.05$ the `continent` variable (aggregation of the `country` variable) should be included in the model as a variable that potentially has a significant influence.
 
-The 
+Below follows the results of the logistic regression model which includes the confounding variable as an explanatory variable.
 
+```{r, echo=FALSE}
+summary(glm_confounding)$coefficients %>% broom::tidy() %>% knitr::kable()
+```
+
+Consumption goods shows some significance. This indicates that people who are classified as driven by wealth may tend to spend more on consumption goods than people who are not driven by wealth.
+
+```{r}
+ggplot(data = survey_results_continent, aes(x = consumption_goods, group = group, colour = group)) + 
+  geom_density(alpha = 0.2, aes(fill = group), bw = 5)
+```
+
+However, the model includes multiple comparisons. The p-values need to be adjusted in order to account for random significance.
+
+```{r, echo = FALSE}
+coeffs <- summary(glm_confounding)$coefficients %>% broom::tidy()
+coeffs <- coeffs[2:nrow(coeffs), ncol(coeffs)]
+
+adjusted_p_values_fdr<- p.adjust(coeffs, method = "fdr")
+adjusted_p_values_bonf <- p.adjust(coeffs,method = "bonf")
+
+df_survey_values<- cbind(coeffs,adjusted_p_values_bonf)
+df_survey_values <- cbind(df_survey_values,adjusted_p_values_fdr)
+
+df_survey_values <- as.tibble(df_survey_values) %>% select(coeffs,adjusted_p_values_fdr,adjusted_p_values_bonf)
+
+colnames(df_survey_values) <- c('P_original', 'P_adjust(FDR)', 'P_adjust(Bonf)')
+
+knitr::kable(df_survey_values)
+
+```
+
+Adjusting the p-value removes all significance from the model. The lack of significance can be attributed to the lack of more data. If more data was collected, the study would have had the potential to gain more power.
 
 # Discussion
 
@@ -341,6 +376,6 @@ The simplest way of determining whether country has an influence on our model, w
 South Africa, Nigeria and Botswana have a lot in common in terms of cultural lifestyle, which means that we could group these observations as `Africa`. The other single observations should be omitted for this comparison, because it would require arbitrary assumptions where these data points would fit in.
 
 ```{r echo=FALSE}
-anova(lm_confound_not, lm_confound, test = "LRT")
+anova_confounding %>% broom::tidy() %>% knitr::kable()
 ```
 
