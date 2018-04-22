@@ -215,11 +215,7 @@ lm_confound <- glm(group_bin ~ living_expenses +
 ```
 
 
-The Anova test results in the Appendix [Continent section](#edacontinent) has the `Pr(>Chi)` output indicates $0.05046$. Since this value is on the verge of being below the significance level and the fact that we do not have a very large number of observations, the `continent` variable will be used in our model as a confounding variable. 
-
-# Discussion
-
-## Study Design {#designdisc}
+## Study Design Discussion {#designdisc}
 
 The [Survey Questions](#surveyq) were constructed to account for all types of spending so that the respondent could better consider their proportional spending distribution. There are many subjective and psychological features that would contribute to someone's self-assessment of expected and base salary estimates which was accounted for when stating that we are looking at a person's drive for money, therefore their perceived attitude toward financial vocational incentives. 
 
@@ -229,8 +225,206 @@ Self-assessments aren't ideal since the participant is required to think objecti
 
 It was good to use the point system to divide the spending because it forced the participant to consider each category of interest in proportion to the others. The improvement we would make is engineering a clearer divide between what is considered basic needs or not and comparing the expenditures to the local average spending percentages on necessities versus conspicuous spending. 
 
-## Results Discussion
+# Analysis
 
+## methodology
+
+Our analysis wants to compare the two defined groups (participants who are driven by wealth and those who are not) in terms of spending habits.
+
+|  Variable Type       | Variable Name                                                                |
+|--------------------------|----------------------------------------------------------------------------|
+| `response`            | `Participant Group` |
+| `explanatory`          | `living_expenses` |
+| `explanatory`          | `savings` |
+| `explanatory`          | `vacation` |
+| `explanatory`          | `daily_leisure` |
+| `explanatory`          | `consumption_goods` |
+| `explanatory`          | `sports_hobbies` |
+| `explanatory`          | `other` |
+
+Given the nature of our model variables, a logistic regression model would be the the most appropriate model choice - all the explanatory variables are continuous, whereas the response variable is a binary outcome.
+
+Before excepting that this model is sufficient, it should be considered whether we are dealing with any confounding variables.
+
+Each person who completed the survey had to report their country of employment. Data was collected from a number of different countries. The country a person works in has the potential to influence a person's spending behaviours regardless of their response group. For example, people from different countries may not spend the same amount on vacation, as found by [MoveHub](https://www.movehub.com/blog/worlds-biggest-travellers/).
+
+We need to consider whether country has any significant effect our model. The Appendix [visualization](#edacontinent) shows a number of single observations for different countries, and a larger number of observations from Canada, South Africa and the US. A arguably logical solution to the handling of single country observations would be to group the countries by similarities. Seeing that Canada and the United States of America are neighbouring countries it we can group these two countries as `North America`.
+
+South Africa, Nigeria and Botswana have a lot in common in terms of lifestyle, which means that we could group these observations as `Africa`. The other single observations should be omitted for this comparison, because it would require arbitrary assumptions for classifying these observations.
+
+## Results
+
+```{r eval=FALSE, echo=FALSE}
+# ANONYMIZATION ---------------------------------------------------------------
+# removing confidential data
+survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv', skip = 1)
+survey_results <- survey_results[, 10:ncol(survey_results)]
+
+#import data
+# survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv') # local path - remove identifiers beforehand
+
+# redefine column names
+colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expect', 'no_increase_acceptance', 
+                           'living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
+                           'sports_hobbies', 'other')
+
+# spending categories
+spending_cats <- c('living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods', 
+                           'sports_hobbies', 'other')
+
+# remove no consent
+survey_results <- survey_results %>% filter(consent %in% c('Yes'))
+
+# add observation id
+survey_results$id <- 1:nrow(survey_results)
+
+# save raw clean data
+saveRDS(survey_results, file = '../data/processed/surveydata_clean.rds')
+
+# remove all traces
+rm(survey_results)
+```
+
+```{r echo=FALSE}
+# DATA CLEANING AND WRANGLING -------------------------------------------------
+# import clean data
+survey_results <-  readRDS(file = '../data/processed/surveydata_clean.rds') 
+
+# redefine column names
+colnames(survey_results) <- c('consent', 
+                              'country', 
+                              'salary_base', 
+                              'salary_expect', 
+                              'no_increase_acceptance',
+                              'living_expenses', 
+                              'savings', 
+                              'vacation', 
+                              'daily_leisure', 
+                              'consumption_goods',
+                              'sports_hobbies', 
+                              'other', 
+                              'id')
+
+# determine spending categories
+spending_cats <- c('living_expenses', 
+                   'savings', 
+                   'vacation', 
+                   'daily_leisure', 
+                   'consumption_goods',
+                   'sports_hobbies', 
+                   'other')
+
+# ensure any NA spending values are set to 0
+survey_results[ , spending_cats][is.na(survey_results[,spending_cats])] <- 0
+
+# converting char to numeric
+survey_results$salary_base <- as.numeric(as.character(survey_results$salary_base))
+survey_results$salary_expect <- as.numeric(as.character(survey_results$salary_expect))
+
+
+# add salary ratio 
+survey_results <- survey_results %>% mutate(ratio = (salary_expect - salary_base)/salary_base)
+
+
+## backup dataset with all outliers
+survey_results_all_outliers <- survey_results
+
+# remove outliers
+survey_results <- survey_results %>% 
+  filter(!ratio %in% boxplot.stats(survey_results$ratio)$out)
+
+# grouping participants by wealth or not wealth criteria
+survey_results <- survey_results %>% 
+  mutate(group = ifelse(no_increase_acceptance == "No" & ratio > median(ratio),"wealth", 
+                        ifelse(no_increase_acceptance == "Yes" & ratio <= median(ratio),"not_wealth", 
+                               "other")), 
+         group_bin = ifelse(group == "wealth", 1, 
+                            ifelse(group == "not_wealth", 0, NA)))
+
+# filter out participants who do not satisfy grouping criteria
+survey_results_grouped <- survey_results %>% filter(!group %in% c("other"))
+
+# group countries (confounder) by continent
+survey_results_grouped <- survey_results_grouped %>% 
+  mutate(continent = ifelse(country %in% c("United States of America (USA)", 
+                                           "Canada"), 
+                            'North America', 
+                            ifelse(country %in% c("Botswana", 
+                                                  "Nigeria", 
+                                                  "South Africa"), 
+                                   'Africa', 
+                                   NA)))
+
+# filter out participants who do not fall into continent groups
+survey_results_continent <- survey_results_grouped %>% 
+  filter(!is.na(continent))
+
+# glm excluding continent (confounder)
+glm_no_confounding <- glm(group_bin ~ 
+                         living_expenses + 
+                          savings + 
+                          vacation + 
+                          daily_leisure + 
+                          consumption_goods + 
+                          sports_hobbies + 
+                          other, 
+                        data = survey_results_continent, 
+                        family = binomial(link = "logit"))
+
+# glm including continent (confounder)
+glm_confounding <- glm(group_bin ~ 
+                            living_expenses + 
+                            savings + 
+                            vacation + 
+                            daily_leisure + 
+                            consumption_goods + 
+                            sports_hobbies + 
+                            other + continent, 
+                          data = survey_results_continent, 
+                          family = binomial(link = "logit"))
+
+# anova test
+anova_confounding <- anova(glm_no_confounding, glm_confounding, test = "LRT")
+```
+
+In the Appendix [Continent section](#edacontinent) two logistic regression models are compared to determine the effect of the potential confounding variable. 
+
+The Anova test results indicates a p-value of $0.05046$. Since this value is on the verge of being below a significance level of $0.05$ the `continent` variable (aggregation of the `country` variable) should be included in the model as a variable that potentially has a significant influence.
+
+Below follows the results of the logistic regression model which includes the confounding variable as an explanatory variable.
+
+```{r, echo=FALSE}
+summary(glm_confounding)$coefficients %>% broom::tidy() %>% knitr::kable()
+```
+
+Consumption goods shows some significance. This indicates that people who are classified as driven by wealth may tend to spend more on consumption goods than people who are not driven by wealth.
+
+```{r}
+ggplot(data = survey_results_continent, aes(x = consumption_goods, group = group, colour = group)) + 
+  geom_density(alpha = 0.2, aes(fill = group), bw = 5)
+```
+
+However, the model includes multiple comparisons. The p-values need to be adjusted in order to account for random significance.
+
+```{r, echo = FALSE}
+coeffs <- summary(glm_confounding)$coefficients %>% broom::tidy()
+coeffs <- coeffs[2:nrow(coeffs), ncol(coeffs)]
+
+adjusted_p_values_fdr<- p.adjust(coeffs, method = "fdr")
+adjusted_p_values_bonf <- p.adjust(coeffs,method = "bonf")
+
+df_survey_values<- cbind(coeffs,adjusted_p_values_bonf)
+df_survey_values <- cbind(df_survey_values,adjusted_p_values_fdr)
+
+df_survey_values <- as.tibble(df_survey_values) %>% select(coeffs,adjusted_p_values_fdr,adjusted_p_values_bonf)
+
+colnames(df_survey_values) <- c('P_original', 'P_adjust(FDR)', 'P_adjust(Bonf)')
+
+knitr::kable(df_survey_values)
+
+```
+
+Adjusting the p-value removes all significance from the model. The lack of significance can be attributed to the lack of more data. If more data was collected, the study would have had the potential to gain more power.
 
 # Conclusion
 
