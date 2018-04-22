@@ -48,7 +48,7 @@ These were the first steps applied to `surveydata_clean.rds` when the data was d
 
 ```{r eval=FALSE}
 # removing confidential data
-survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv', skip = 1)
+#survey_results <- read_csv(file = '../../survey_data/Demographic Survey.csv', skip = 1)
 survey_results <- survey_results[, 10:ncol(survey_results)]
 
 #import data
@@ -80,16 +80,22 @@ Once the data is pre-processed, it is reimported and the columns and categories 
 
 ```{r}
 # import clean data
-survey_results <-  readRDS(file = '../../data/processed/surveydata_clean.rds')  # local path - remove identifiers beforehand
-
+survey_results <-  readRDS(file = '../data/processed/surveydata_clean.rds') 
 # redefine column names
-colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expect', 'no_increase_acceptance',
-                              'living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods',
+colnames(survey_results) <- c('consent', 'country', 'salary_base', 'salary_expect',
+                              'no_increase_acceptance',
+                              'living_expenses', 'savings', 'vacation', 'daily_leisure',
+                              'consumption_goods',
                               'sports_hobbies', 'other', 'id')
 
 # spending categories
-spending_cats <- c('living_expenses', 'savings', 'vacation', 'daily_leisure', 'consumption_goods',
-                   'sports_hobbies', 'other')
+spending_cats <- c('living_expenses', 
+                   'savings', 
+                   'vacation', 
+                   'daily_leisure', 
+                   'consumption_goods',
+                   'sports_hobbies', 
+                   'other')
 ```
 
 
@@ -105,7 +111,9 @@ survey_results$salary_expect <- as.numeric(as.character(survey_results$salary_ex
 
 
 # add ratio 
-survey_results <- survey_results %>% mutate(ratio = (salary_expect - salary_base)/salary_base)
+survey_results <- 
+  survey_results %>% 
+  mutate(ratio = (salary_expect - salary_base)/salary_base)
 
 ```
 
@@ -147,8 +155,14 @@ The respondants are divided into two groups - those who expect a salary increase
 
 ```{r}
 # grouping by wealth or not wealth groups
-survey_results <- survey_results %>% mutate(group = ifelse(no_increase_acceptance == "No" & ratio > median(ratio),"wealth",ifelse(no_increase_acceptance == "Yes" & ratio <= median(ratio),"not_wealth", "other")), 
-                                            group_bin = ifelse(group == "wealth", 1, ifelse(group == "not_wealth", 0, NA)))
+survey_results <- 
+  survey_results %>% 
+  mutate(group = ifelse(no_increase_acceptance == "No" & ratio > median(ratio),
+                        "wealth",
+                        ifelse(no_increase_acceptance == "Yes" 
+                               & ratio <= median(ratio),
+                               "not_wealth", "other")),
+         group_bin = ifelse(group == "wealth", 1, ifelse(group == "not_wealth", 0, NA)))
 
 survey_results_grouped <- survey_results %>% filter(!group %in% c("other"))
 
@@ -176,10 +190,15 @@ Each person who completed the survey had to report their country of residence. D
 We need to consider whether country has any significant effect on either out explanatory expense variables or our response variable.
 
 ```{r}
-ggplot(data = survey_results_grouped, aes(x = country, y = ratio, colour = country, fill = country)) + 
+ggplot(data = survey_results_grouped, 
+       aes(x = country, 
+           y = ratio, 
+           colour = country, 
+           fill = country)) + 
   geom_jitter() + 
    geom_violin(alpha = 0.2) +
-    theme(axis.text.x = element_text(angle = 25, hjust = 0.7, vjust = 0.8), legend.position = "none")
+    theme(axis.text.x = element_text(angle = 25, hjust = 0.7, vjust = 0.8), 
+          legend.position = "none")
 ```
 
 After removing the observations that do not match our criteria for either a person who is driven by wealth or not driven by wealth, we are left with a relatively small number of observations. The visualization above shows a number of single observations for different countries, but quite a few observations from Canada, South Africa and the US.
@@ -189,15 +208,11 @@ The simplest way of determining whether country has an influence on our model, w
 South Africa, Nigeria and Botswana have a lot in common in terms of cultural lifestyle, which means that we could group these observations as `Africa`. The other single observations should be omitted for this comparison, because it would require arbitrary assumptions where these data points would fit in.
 
 ```{r}
-survey_results_grouped <- survey_results_grouped %>% mutate(continent = 
-                                                              ifelse(country %in% c("United States of America (USA)", 
-                                                                                    "Canada"), 
+survey_results_grouped <- survey_results_grouped %>% 
+  mutate(continent = ifelse(country %in% c("United States of America (USA)", "Canada"), 
                                                                      'North America', 
-                                                                     ifelse(country %in% c("Botswana", 
-                                                                                           "Nigeria", 
-                                                                                           "South Africa"), 
-                                                                            'Africa', 
-                                                                            NA)))
+                            ifelse(country %in% c("Botswana",  "Nigeria",  "South Africa"), 
+                                   'Africa', NA)))
 
 survey_results_continent <- survey_results_grouped %>% filter(!is.na(continent))
 ```
@@ -289,7 +304,9 @@ A person who spends a lot on vacation and leisure (which can be either the young
 ```{r}
 ggplot(survey_results, aes(x = ratio, group = no_increase_acceptance, colour = no_increase_acceptance)) + 
   geom_density(aes(fill = no_increase_acceptance), alpha = 0.2)  +
-  labs(x = 'Salary Change Ratio', y ='Probability Density', title = 'All Participants Salary Ratio Distribution', subtitle= "Grouped by Accepted/Declined No-increase in Salary")
+  labs(x = 'Salary Change Ratio', y ='Probability Density', 
+       title = 'All Participants Salary Ratio Distribution', 
+       subtitle= "Grouped by Accepted/Declined No-increase in Salary")
 ```
 
 The plot above shows similar salary ratio distributions for participants who prefer high job satisfaction as those who prefer a salary increase. It does seem as if a person who has a higher salary ratio has a higher probability of prefering an increase over job satisfaction, even though this probability is not significant. However, it will be of more importance if the distributions looked different for people with different types of expenses.
@@ -309,10 +326,23 @@ survey_results_spendings<- melt(survey_results_spendings)
 # joy plot per participant
 ggplot(survey_results_spendings, aes(x = value, y = variable))+
   geom_joy(stat = "binline",bins = 20, scale = 0.95, draw_baseline = FALSE)+
-    scale_y_discrete(breaks = c("living_expenses","savings","vacation","daily_leisure","consumption_goods","sports_hobbies","other"),labels=c("Living   Expenses","Savings","Vacation","Daily Leisure","Consumption Goods","Sports Hobbies","Other")) +
+    scale_y_discrete(breaks = c("living_expenses",
+                                "savings","vacation",
+                                "daily_leisure",
+                                "consumption_goods",
+                                "sports_hobbies","other"),
+                     labels=c("Living   Expenses",
+                              "Savings",
+                              "Vacation",
+                              "Daily Leisure",
+                              "Consumption Goods",
+                              "Sports Hobbies",
+                              "Other")) +
   theme(legend.position = "None") +
     scale_x_continuous(labels = function(x) paste0(x, "%"))+ # Add percent sign 
-      labs(x = 'Expenses', y ='Spending Categories', title = 'All Participants Expenses Distributions', subtitle= "Grouped by Spending Categories")
+      labs(x = 'Expenses', y ='Spending Categories', 
+           title = 'All Participants Expenses Distributions', 
+           subtitle= "Grouped by Spending Categories")
 ```
 
 
@@ -321,10 +351,25 @@ ggplot(survey_results_spendings, aes(x = value, y = variable))+
 # joy plot per participant
 ggplot(survey_results_spendings, aes(x = value, y = variable, height = ..density.. ))+
   geom_joy(stat = "density", bw=2)+
-    scale_y_discrete(breaks = c("living_expenses","savings","vacation","daily_leisure","consumption_goods","sports_hobbies","other"),labels=c("Living   Expenses","Savings","Vacation","Daily Leisure","Consumption Goods","Sports Hobbies","Other")) +
+    scale_y_discrete(breaks = c("living_expenses",
+                                "savings",
+                                "vacation",
+                                "daily_leisure",
+                                "consumption_goods",
+                                "sports_hobbies",
+                                "other"),
+                     labels=c("Living   Expenses",
+                              "Savings",
+                              "Vacation",
+                              "Daily Leisure",
+                              "Consumption Goods",
+                              "Sports Hobbies",
+                              "Other")) +
   theme(legend.position = "None") +
     scale_x_continuous(labels = function(x) paste0(x, "%"))+ # Add percent sign 
-      labs(x = 'Expenses', y ='Spending Categories', title = 'All Participants Expenses Distributions', subtitle= "Grouped by Spending Categories")
+      labs(x = 'Expenses', y ='Spending Categories', 
+           title = 'All Participants Expenses Distributions', 
+           subtitle= "Grouped by Spending Categories")
 ```
 
 #### Additional Modelling and Exploratory Analysis
