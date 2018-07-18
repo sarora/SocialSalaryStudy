@@ -6,14 +6,11 @@ Updated Analysis Workflow PDF rendering
 
 | Deliverables      | Description |
 |------------------|-------------|
-| [Report](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/master/doc/sss_report.pdf)   | Final Report PDF |
-| [Report RMD](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/master/doc/sss_report.Rmd)   |  Final Report ran in Rmd |
-|[Analysis Workflow Rmd](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/master/src/workflow_clean.Rmd)|Exploratory Data Analysis|
-|[Analysis Workflow PDF](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/master/src/workflow_clean.pdf)|Exploratory Data Analysis|
-| [Milestone 2 Commit](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/commit/0dfc2283b94c122301289f3cf19fd567d730f679) | Final commit before release |
-| [Release v3.0](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/releases/tag/v3.0) |Milestone 2 release |
-| [Release v3.1](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/releases/tag/v3.1) |Milestone 2 release with rendered workflow|
-| [Proposal and Questions](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/vmulholl/doc/proposal.md) | Questions from survey
+| [Report](https://github.com/sarora/SocialSalaryStudy/tree/master/doc/sss_report.pdf)   | Final Report PDF |
+| [Report RMD](https://github.com/sarora/SocialSalaryStudy/tree/master/doc/sss_report.Rmd)   |  Final Report ran in Rmd |
+|[Analysis Workflow Rmd](https://github.com/sarora/SocialSalaryStudy/tree/master/src/workflow_clean.Rmd)|Exploratory Data Analysis|
+|[Analysis Workflow PDF](https://github.com/sarora/SocialSalaryStudy/tree/master/src/workflow_clean.pdf)|Exploratory Data Analysis|
+| [Proposal and Questions](https://github.com/sarora/SocialSalaryStudy/blob/master/doc/proposal.md) | Questions from survey
 
 ## Hypothesis
 
