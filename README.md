@@ -8,8 +8,6 @@ Updated Analysis Workflow PDF rendering
 |------------------|-------------|
 | [Report](https://github.com/sarora/SocialSalaryStudy/tree/master/doc/sss_report.pdf)   | Final Report PDF |
 | [Report RMD](https://github.com/sarora/SocialSalaryStudy/tree/master/doc/sss_report.Rmd)   |  Final Report ran in Rmd |
-|[Analysis Workflow Rmd](https://github.com/sarora/SocialSalaryStudy/tree/master/src/workflow_clean.Rmd)|Exploratory Data Analysis|
-|[Analysis Workflow PDF](https://github.com/sarora/SocialSalaryStudy/tree/master/src/workflow_clean.pdf)|Exploratory Data Analysis|
 | [Proposal and Questions](https://github.com/sarora/SocialSalaryStudy/blob/master/doc/proposal.md) | Questions from survey
 
 ## Hypothesis
@@ -40,7 +38,7 @@ The hypothesis test requires data collection. A survey is the best practical way
 ### Data Overview
 
 
-The following table summarises the key fields populated by the survey data and the calculated value, `ratio`,as a ratio of the two salary values.
+The following table summarises the key fields populated by the survey data and the calculated value, `ratio`, as a ratio of the two salary values.
 
 |  Features       | Description                                                                |
 |--------------------------|----------------------------------------------------------------------------|
@@ -57,12 +55,10 @@ The following table summarises the key fields populated by the survey data and t
 | `other`                  | Other (health care, taxes, dependent expenses, etc.) percentage of spending |
 
 
-
 Our response variable underwent a transformation to better differentiate the participants of interest since we cannot assume that a person with a high salary ratio is primarily driven by wealth as they may have specified that job satisfaction is a bigger driver than salary increase and vice-versa. Those that do not fall into either these two groups are considered to have answered ambiguously (expects a high salary increase, but is content with job satisfaction or the opposite) and cannot be considered for our study.
 
 
-## Analysis Overview
-
+## Analysis Overview and Final Results
 
 Our analysis wants to compare the two defined groups (participants who are driven by wealth and those who are not) in terms of spending habits.
 
@@ -78,15 +74,33 @@ Our analysis wants to compare the two defined groups (participants who are drive
 | `explanatory`          | `other` |
 
 
+Given the nature of our model variables, a logistic regression model would be the the most appropriate model choice - all the explanatory variables are continuous, whereas the response variable is a binary outcome.
 
+Before excepting that this model is sufficient, it should be considered whether we are dealing with any confounding variables.
+
+Each person who completed the survey had to report their country of employment. Data was collected from a number of different countries. The country a person works in has the potential to influence a person's spending behaviours regardless of their response group. For example, people from different countries may not spend the same amount on vacation, as found by [MoveHub](https://www.movehub.com/blog/worlds-biggest-travellers/).
+
+We need to consider whether country has any significant effect our model. In our data, we have single observations for different countries, and a larger number of observations from Canada, South Africa and the US. A arguably logical solution to the handling of single country observations would be to group the countries by similarities. Seeing that Canada and the United States of America are neighbouring countries it we can group these two countries as `North America`.
+
+South Africa, Nigeria and Botswana have a lot in common in terms of lifestyle, which means that we could group these observations as `Africa`. The other single observations should be omitted for this comparison, because it would require arbitrary assumptions for classifying these observations.
+
+## Conclusion
+
+It was found out that consumption goods showed some significance. This indicates that people who were classified as driven by wealth might tend to spend more on consumption goods than people who were not driven by wealth.
+
+However, the model includes multiple comparisons. The p-values need to be adjusted in order to account for random significance.
+
+Adjusting the p-values removes all significance from the logistic regression model. The lack of significance can be attributed to the lack of data. If more data was collected, the study would have had the potential to gain more power and make conclusive findings.
+
+Refer [report](https://github.com/sarora/SocialSalaryStudy/blob/master/doc/proposal.md) for detailed explanation.
 
 
 # Survey Study Design Reflection
-The survey Questions were constructed to account for all types of spending so that the respondent could better consider their proportional spending distribution. There are many subjective and psychological features that would contribute to someone's self-assessment of expected and base salary estimates which was accounted for when stating that we are looking at a person's drive for money, therefore their perceived attitude toward financial vocational incentives.
+The survey questions were constructed to account for all types of spending so that the respondent could better consider their proportional spending distribution. There are many subjective and psychological features that would contribute to someone's self-assessment of expected and base salary estimates which was accounted for when stating that we are looking at a person's drive for money, therefore their perceived attitude toward financial vocational incentives.
 
 Clarifying the spending categories is a shortcoming of our study. There is a tradeoff between making our survey straightforward and being too transparent about the agenda behind the analysis with overly specific questions. There is some ambiguity behind the concept of social standards which we tried to account for in the vacation, hobbies, consumption and daily leisure categories, but we acknowledge that one could be partaking in conspicuous consumption while categorizing it as a living expense, such as paying a very high rent to live in the nicest neighborhood. The "Other" category could also be misleading because there could be some frivolous expenses that are not accounted for.
 
-Self-assessments are not ideal since the participant is required to think objectively on the spot about their finances. This could inject a considerable source of bias, and would have required a more thorough assessment method than a survey. Providing an export of a bank categorization of one's spendings would be a better method for a true representation.
+Self-assessments are not ideal since the participant is required to think objectively on the spot about their finances. This could inject a considerable source of bias, and would have required a more thorough assessment method than a survey.
 
 It was good to use the point system to divide the spending because it forced the participant to consider each category of interest in proportion to the others. The improvement we would make is engineering a clearer divide between what is considered basic needs or not and comparing the expenditures to the local average spending percentages on necessities versus conspicuous spending.
 

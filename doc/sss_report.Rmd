@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r, warning=F, message=F, echo=FALSE}
-library(tidyverse); theme_set(theme_bw())
+library(tidyverse)
 library(cowplot)
 library(ggjoy)
 library(reshape2)
@@ -46,12 +46,12 @@ The study is inspired by [Hircsh's hypothesis](https://github.ubc.ca/ubc-mds-201
 
 ## Survey Study Design
 
-A survey was conducted on _Survey Monkey_ to address the question at hand. The intended audience was originally our MDS class, but the invitation was extended to our social media accounts (LinkedIn, Facebook, etc.). The 5 questions in the Appendix under [Survey Questions](#surveyq) are conceptualized from both pertinent topics, one pertaining to the salary motivations and the latter is a measure of a participants social standards. This is admittedly a difficult concept to measure, thus our focus is mainly to delineated the difference between essential expenditure versus lifestyle enhancement spendings. The vacation spending category is considered a non-essential category since it can be extrapolated that any non-conspicuous travels would (such as traveling to a nearby town to visit relatives) will only make up a marginal proportion of the overall spending. The paper [Conspicuous Consumption Applied to Tourism Destination](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/master/doc/references/Conspicuous%20Consumption%20Applied%20to%20Tourism%20Destination.pdf) states that the location or purpose of vacation will help determine whether the spending is categorized as conspicuous or not. The daily leisure, hobbies and consumer goods categories are all deemed to fall under the non-necessary spending categories and the living expenses, savings and other are classified as basic needs. The [Study Design discussion](#designdisc) will elaborate on whether these assumptions were truly justified at the phase of study design. 
+A survey was conducted on _Survey Monkey_ to address the question at hand. The intended audience was originally our MDS class, but the invitation was extended to our social media accounts (LinkedIn, Facebook, etc.). The 5 questions in the Appendix under [Survey Questions](#surveyq) were conceptualized from both pertinent topics, one pertaining to the salary motivations and the latter is a measure of a participants social standards. This was admittedly a difficult concept to measure, thus our focus was mainly to delineated the difference between essential expenditure versus lifestyle enhancement spendings. The vacation spending category was considered a non-essential category since it can be extrapolated that any non-conspicuous travels would (such as traveling to a nearby town to visit relatives) will only make up a marginal proportion of the overall spending. The paper [Conspicuous Consumption Applied to Tourism Destination](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/master/doc/references/Conspicuous%20Consumption%20Applied%20to%20Tourism%20Destination.pdf) states that the location or purpose of vacation will help determine whether the spending is categorized as conspicuous or not. The daily leisure, hobbies and consumer goods categories were all deemed to fall under the non-necessary spending categories and the living expenses, savings and other are classified as basic needs. The [Study Design discussion](#designdisc) will elaborate on whether these assumptions were truly justified at the phase of study design. 
 
 
 ## Data Collection Methods
 
-Certain safety checks are put in place to prevent users from entering invalid data. For instance, the spending categories have to add up to 100% of their expenditure
+Certain safety checks were put in place to prevent users from entering invalid data. For instance, the spending categories have to add up to 100% of their expenditure
 
 The following table summarises the key fields populated by the [survey](#surveyq) data and the calculated value, `ratio`, as a ratio of the two salary values.
 
@@ -69,9 +69,9 @@ The following table summarises the key fields populated by the [survey](#surveyq
 | `sports_hobbies`         | Personal Sports and Hobbies (sporting goods and services, gym, arts and crafts, etc.) percentage of spending |
 | `other`                  | Other (health care, taxes, dependent expenses, etc.) percentage of spending |
 
-The data is anonymized before being made visible and then uploaded as a processed [dataset](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/vmulholl/data/processed/surveydata_clean.rds).
+The data was anonymized before being made visible and then uploaded as a processed [dataset](https://github.ubc.ca/ubc-mds-2017/SocialSalaryStudy/blob/vmulholl/data/processed/surveydata_clean.rds).
 
-Several pre-processing steps are performed to clean and wrangle the data into a usable format. Pre-processing included removing salary ratio outliers that may have been caused by incorrect data entries. It was decided to remove the values beyond ~95% confidence level. The box-plot method performs a more sophisticated outlier selection than the alternative, the quantile approach, that is more rigid in the 95% threshold. Since we have less observations than ideal, it seemed more appropriate.
+Several pre-processing steps were performed to clean and wrangle the data into a usable format. Pre-processing included removing salary ratio outliers that might have been caused by incorrect data entries. It was decided to remove the values beyond ~95% confidence level. The box-plot method performs a more sophisticated outlier selection than the alternative, the quantile approach, that is more rigid in the 95% threshold. Since we have less observations than ideal, it seemed more appropriate.
 
 Our response variable underwent a transformation to better differentiate the participants of interest since we cannot assume that a person with a high salary ratio is primarily driven by wealth as they may have specified that job satisfaction is a bigger driver than salary increase and vice-versa. Those that do not fall into either these two groups are considered to have answered ambiguously (expects a high salary increase, but is content with job satisfaction or the opposite) and cannot be considered for our study. 
 
@@ -227,13 +227,13 @@ Our analysis wants to compare the two defined groups (participants who are drive
 | `explanatory`          | `sports_hobbies` |
 | `explanatory`          | `other` |
 
-Given the nature of our model variables, a logistic regression model would be the the most appropriate model choice - all the explanatory variables are continuous, whereas the response variable is a binary outcome.
+Given the nature of our model variables, a logistic regression model would be the most appropriate model choice - all the explanatory variables are continuous, whereas the response variable is a binary outcome.
 
-Before excepting that this model is sufficient, it should be considered whether we are dealing with any confounding variables.
+Before expecting that this model is sufficient, it should be considered whether we are dealing with any confounding variables.
 
 Each person who completed the survey had to report their country of employment. Data was collected from a number of different countries. The country a person works in has the potential to influence a person's spending behaviours regardless of their response group. For example, people from different countries may not spend the same amount on vacation, as found by [MoveHub](https://www.movehub.com/blog/worlds-biggest-travellers/).
 
-We need to consider whether country has any significant effect our model. The Appendix [visualization](#edacontinent) shows a number of single observations for different countries, and a larger number of observations from Canada, South Africa and the US. A arguably logical solution to the handling of single country observations would be to group the countries by similarities. Seeing that Canada and the United States of America are neighbouring countries it we can group these two countries as `North America`.
+We needed to consider whether a country had any significant effect on our model. The Appendix [visualization](#edacontinent) shows a number of single observations for different countries, and a larger number of observations from Canada, South Africa, and the US. An arguably logical solution to the handling of single country observations would be to group the countries by similarities. Seeing that Canada and the United States of America are neighboring countries we can group these two countries as `North America`.
 
 South Africa, Nigeria and Botswana have a lot in common in terms of lifestyle, which means that we could group these observations as `Africa`. The other single observations should be omitted for this comparison, because it would require arbitrary assumptions for classifying these observations.
 
@@ -372,9 +372,9 @@ glm_confounding <- glm(group_bin ~
 anova_confounding <- anova(glm_no_confounding, glm_confounding, test = "LRT")
 ```
 
-In the Appendix [Continent section](#edacontinent) two logistic regression models are compared to determine the effect of the potential confounding variable. 
+In the Appendix [Continent section](#edacontinent) two logistic regression models were compared to determine the effect of the potential confounding variable. 
 
-The Anova test results indicates a p-value of $0.05046$. Since this value is on the verge of being below a significance level of $0.05$ the `continent` variable (aggregation of the `country` variable) should be included in the model as a variable that potentially has a significant influence.
+The Anova test results indicated a p-value of $0.05046$. Since this value is on the verge of being below a significance level of $0.05$ the `continent` variable (aggregation of the `country` variable) should be included in the model as a variable that potentially has a significant influence.
 
 Below follows the results of the logistic regression model which includes the confounding variable as an explanatory variable.
 
@@ -382,7 +382,7 @@ Below follows the results of the logistic regression model which includes the co
 summary(glm_confounding)$coefficients %>% broom::tidy() %>% knitr::kable()
 ```
 
-Consumption goods shows some significance. This indicates that people who are classified as driven by wealth may tend to spend more on consumption goods than people who are not driven by wealth.
+Consumption goods showed some significance. This indicates that people who are classified as driven by wealth may tend to spend more on consumption goods than people who are not driven by wealth.
 
 ```{r}
 ggplot(data = survey_results_continent, aes(x = consumption_goods, group = group, colour = group)) + 
