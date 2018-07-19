@@ -92,7 +92,7 @@ However, the model includes multiple comparisons. The p-values need to be adjust
 
 Adjusting the p-values removes all significance from the logistic regression model. The lack of significance can be attributed to the lack of data. If more data was collected, the study would have had the potential to gain more power and make conclusive findings.
 
-Refer [report](https://github.com/sarora/SocialSalaryStudy/blob/master/doc/proposal.md) for detailed explanation.
+Refer [report](https://github.com/sarora/SocialSalaryStudy/blob/master/doc/sss_report.pdf) for detailed explanation.
 
 
 # Survey Study Design Reflection
