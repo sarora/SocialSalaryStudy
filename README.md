@@ -14,45 +14,81 @@ Updated Analysis Workflow PDF rendering
 
 ## Hypothesis
 
-<h4 align="center"> Is a person's social standards correlated with a person's expected salary? </a></h4>
+<h4 align="center"> Is a person's social standards correlated with a person's drive for financial wealth ?
+
+ </a></h4>
 
 <br>
 
 ## Overview
 
-The goal of this study is to determine whether a person's social standards are correlated with a person's expected salary. The idea behind the hypothesis is that people who have higher social standards expect a higher salary. The opposite can also be argued - does a person's expected salary determine a person's social standards? This study does not aim to determine which variables are explanatory or a response, but rather to determine whether a strong correlation exists between social standards and expected salary. We found it reasonable to assume that a person who is driven by money would expect to earn more than the average person who has the same skillset and experience.
+The purpose of this study is to measure whether a person is driven by money or not. We found it reasonable to assume that a person who is driven by money would expect to earn more than the average person who has the same skillset and experience. The `null` hypothesis is that the people who are driven by financial wealth and those that are driven by job satisfaction share the same social standards in terms of spending patterns while the `alternative` is that there is enough evidence to support that the two groups do not share the same spending patterns. A logistic regression is used to model the probability of belonging to the said groups given the explanatory spending and country of origin variables.
+
 
 ## Methodology
 
-The test statistic will be attempting to identify if there is a strong correlation between social standards and a person's salary expectations. A positive correlation would be expected between the continuous numerical measurement of social standards and the normalized continuous expected salary range. Social standards and expected salaries are expected to both form t-distributions given the survey responses. A linear regression model seems to be an appropriate choice for the study, since our response variable (expected salary) is a continuous range and the explanatory variables related to social standards are expected to have a linear relationship with expected salary.
-
-### Survey
+### Survey Study Design
 
 The hypothesis test requires data collection. A survey is the best practical way of collecting the required data for this study. The questions for the study needs to be well formulated to ensure that the correct data is collected to reach a conclusion. The questions for this survey will contribute to determining either a person's social standards or expected salary. To avoid response bias the survey questions should not reveal what the hypothesis is that is being tested.
 
-For the purpose of this study, social standards will be defined as a person's inclination for a high relative consumption on leisure activities and non-essential expenditure. Our hypothesis relies on the theory that prevailing social conditions will influences one's relationship with money which would translate in whether increase in income is the priority.
+ The intended audience was originally our MDS class, but the invitation was extended to our social media accounts (LinkedIn, Facebook, etc.). The 5 questions [here](https://github.com/sarora/SocialSalaryStudy/blob/master/doc/proposal.md) are  conceptualized from both pertinent topics, one pertaining to the salary motivations and the latter is a measure of a participants social standards.
 
-Our survey has captured the salary of what a participant thinks an average person with their skills and experience should earn, as well as the salary that the participant expects to receive in 1 year's time. Taking inflation and other micro-factors into account, a participant's expected salary in a year's time shouldn't be much higher than the average person with the same skills and experience.
+ The survey also captured the percentages of the main expenses of each participant. Each participant had to assign percentages that adds up to 100%. The different expense categories were strategically chosen which are believed to relate to a person's social standards. This is admittedly a difficult concept to measure, thus our focus is mainly to delineate the difference between essential expenditure versus lifestyle enhancement spendings. The vacation spending category is considered a non-essential category since it can be extrapolated that any non-conspicuous travels would (such as traveling to a nearby town to visit relatives) will only make up a marginal proportion of the overall spending. The daily leisure, hobbies and consumer goods categories are all deemed to fall under the non-necessary spending categories and the living expenses, savings and other are classified as basic needs.
 
-The participant's salary was stored in their unique currency. The survey was answered by people from various countries with different currencies. This means that we cannot compare the captured salary values between participants. An easy way of standardising these values is to handle the salary values as a ratio of expected salary over average salary. The ratio should be consistent across different currencies.
+
+
+### Data Overview
+
+
+The following table summarises the key fields populated by the survey data and the calculated value, `ratio`,as a ratio of the two salary values.
+
+|  Features       | Description                                                                |
+|--------------------------|----------------------------------------------------------------------------|
+| `salary_base`            | An indicator meant to be a subjective baseline of what salary a <br> person of their expertise would earn.      |
+| `salary_expect`          | The expected salary combined with the base salary provides a relative <br> indicator to the respondent's pursuit of monetary gains. |
+| `no_increase_acceptance` | A binary metric indicating whether a person prefers high job satisfaction of a salary increase.  |
+| `ratio`                  | $\frac{Salary_{expect} - Salary_{base}}{Salary_{base}}$ allows us to differentiate those who <br>have a desire for a high increase in salary vs those that are satisfied with a modest amount.   |
+| `living_expenses`        | Living Expenses (utilities, rent, mortgage, transportation, property taxes if owner, etc.) percentage of spending |
+| `savings`                | Savings (retirement, investments, emergency funds, etc.) percentage of spending |
+| `vacation`               | Vacation (lodging, transportation, day trips, etc.) percentage of spending |
+| `daily_leisure`          | Daily Leisure (eating out, books, movies, self-care, etc.) percentage of spending |
+| `consumption_goods`      | Consumption Goods (clothing, electronics, other luxury items, etc.) percentage of spending |
+| `sports_hobbies`         | Personal Sports and Hobbies (sporting goods and services, gym, arts and crafts, etc.) percentage of spending |
+| `other`                  | Other (health care, taxes, dependent expenses, etc.) percentage of spending |
+
+
+
+Our response variable underwent a transformation to better differentiate the participants of interest since we cannot assume that a person with a high salary ratio is primarily driven by wealth as they may have specified that job satisfaction is a bigger driver than salary increase and vice-versa. Those that do not fall into either these two groups are considered to have answered ambiguously (expects a high salary increase, but is content with job satisfaction or the opposite) and cannot be considered for our study.
+
 
 ## Analysis Overview
 
-The study is interested in the ratio distribution above. Is there any correlation between the above ratio and social standards? The premise of the study was to develop a metric that would indicate the inclination of individuals to see financial gain as the main driver for success and determine if there is a relationship with the way their income is spent. Three variables were collected that pertain to our model's dependent variable which include:
 
-| Dependent Features       | Description                                                                |
+Our analysis wants to compare the two defined groups (participants who are driven by wealth and those who are not) in terms of spending habits.
+
+|  Variable Type       | Variable Name                                                                |
 |--------------------------|----------------------------------------------------------------------------|
-| `salary_base`            | An indicator meant to be a subjective baseline of what salary a <br> person of their expertise would earn.      |
-| `salary_expect`          | The expected salary combined with the base salary provides a relative <br> indicator to the respondents pursuit of monetary gains. |
-| `no_increase_acceptance` | A binary metric serves as a safety check against false positives, that is respondents <br> that may have over-exagerated  their expected salary skewing <br> the impression of interest in monetary gain while in reality being content with their current situation.  |
-| `ratio`                  | This is a calculated metric that simplifies handling respondent's country selection.                                  |
+| `response`            | `Participant Group` |
+| `explanatory`          | `living_expenses` |
+| `explanatory`          | `savings` |
+| `explanatory`          | `vacation` |
+| `explanatory`          | `daily_leisure` |
+| `explanatory`          | `consumption_goods` |
+| `explanatory`          | `sports_hobbies` |
+| `explanatory`          | `other` |
 
-The survey also captured the percentages of the main expenses of each participant. Each participant had to assign percentages that adds up to 100%. The different expense categories were strategically chosen which are believed to relate to a person's social standards. For example, it is believed that a person who spends a large percentage on vacations and daily leisure most likely has higher social standards than a person who contributes most of their salary to savings. The hypothesis is that a person with higher social standards will have a higher salary ratio as described above.
 
-It is difficult to visualize the interaction between expenses, salary ratio and job satisfaction versus salary increase preference. It seems more logical and of statistical importance to fit comparitive models and observe whether the confounder variable adds any value to the model. The salary ratio is a continuous variable and from our ratio probability distribution earlier, we saw that the standard deviation is fairly normally distributed around the mean after removing outliers. For this reason a linear regression model seems like a sensible model to fit to our data.
 
-We want to determine whether the preference for job satisfaction interacts with with our explanatory variables. The explanatory variables in our case are the expense categories. We need to compare an additive linear model with a model that considers job satisfaction as a variable that interacts with our expense categories. The following joy plot displays the distribution of participant spendings.
 
+
+# Survey Study Design Reflection
+The survey Questions were constructed to account for all types of spending so that the respondent could better consider their proportional spending distribution. There are many subjective and psychological features that would contribute to someone's self-assessment of expected and base salary estimates which was accounted for when stating that we are looking at a person's drive for money, therefore their perceived attitude toward financial vocational incentives.
+
+Clarifying the spending categories is a shortcoming of our study. There is a tradeoff between making our survey straightforward and being too transparent about the agenda behind the analysis with overly specific questions. There is some ambiguity behind the concept of social standards which we tried to account for in the vacation, hobbies, consumption and daily leisure categories, but we acknowledge that one could be partaking in conspicuous consumption while categorizing it as a living expense, such as paying a very high rent to live in the nicest neighborhood. The "Other" category could also be misleading because there could be some frivolous expenses that are not accounted for.
+
+Self-assessments are not ideal since the participant is required to think objectively on the spot about their finances. This could inject a considerable source of bias, and would have required a more thorough assessment method than a survey. Providing an export of a bank categorization of one's spendings would be a better method for a true representation.
+
+It was good to use the point system to divide the spending because it forced the participant to consider each category of interest in proportion to the others. The improvement we would make is engineering a clearer divide between what is considered basic needs or not and comparing the expenditures to the local average spending percentages on necessities versus conspicuous spending.
 
 ---
 <h6 align="center">

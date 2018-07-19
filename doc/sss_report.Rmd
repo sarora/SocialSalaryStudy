@@ -53,7 +53,7 @@ A survey was conducted on _Survey Monkey_ to address the question at hand. The i
 
 Certain safety checks are put in place to prevent users from entering invalid data. For instance, the spending categories have to add up to 100% of their expenditure
 
-The following table summarises the key fields populated by the [survey](#surveyq) data and the calculated value, `ratio`, namely the response variable as a ratio of the two salary values.
+The following table summarises the key fields populated by the [survey](#surveyq) data and the calculated value, `ratio`, as a ratio of the two salary values.
 
 |  Features       | Description                                                                |
 |--------------------------|----------------------------------------------------------------------------|
