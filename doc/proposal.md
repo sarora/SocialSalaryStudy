@@ -1,4 +1,4 @@
-## Survey Question
+## Survey Questions
 
 ### Demographic Question
 
